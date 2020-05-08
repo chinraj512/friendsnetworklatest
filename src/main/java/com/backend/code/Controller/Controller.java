@@ -23,17 +23,18 @@ public class Controller {
 	
 	FriendsNetworkRepoistry repo;
 	UserDetails user;
+
 	 @GetMapping("/addprofile")
 	 public String profile(@RequestBody com.backend.code.Objects.profile userprofile)
 	 {
 		  repo.profile(userprofile);
 		  return "success";
 	 }
-	 @GetMapping(path="/{userid}")
-	 public List<UserDetails> findById(@PathVariable ("userid") int userid )
-	 {
-		 return repo.findById(userid);
-	 }
+     @GetMapping("/user")
+     public List<UserDetails> findById(@RequestParam(value="userid") int userid)
+     {
+    	 return repo.findById(userid);
+     }
 	 @PostMapping("/createUser")
 	 public void insertUsersDetails(@RequestBody UserDetails user)
 	 {

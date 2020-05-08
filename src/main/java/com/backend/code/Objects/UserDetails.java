@@ -1,6 +1,5 @@
 package com.backend.code.Objects;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,7 +19,7 @@ public class UserDetails {
 	private String gender;
 	private String phonenumber;
 	private String password;
-	private int age;
+	private String age;
 	private String dateofbirth;
 	
 	public int getUserid() {
@@ -76,12 +75,12 @@ public class UserDetails {
 		this.password = password;
 	}
 	
-	public int getAge() {
+	public String getAge() {
 		return age;
 	}
 	
 
-	public void setAge(int age) {
+	public void setAge(String age) {
 		this.age = age;
 	}
 	
