@@ -35,7 +35,7 @@ public class UserDetails {
 		return username;
 	}
 	
-	@Column(name="username", nullable=false)
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
@@ -44,7 +44,7 @@ public class UserDetails {
 		return email;
 	}
 	
-	@Column(name="email", nullable=false)
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -53,7 +53,7 @@ public class UserDetails {
 		return gender;
 	}
 	
-	@Column(name="gender", nullable=false)
+
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
@@ -62,7 +62,7 @@ public class UserDetails {
 		return phonenumber;
 	}
 	
-	@Column(name="phonenumber", nullable=false)
+
 	public void setPhonenumber(String phonenumber) {
 		this.phonenumber = phonenumber;
 	}
@@ -71,7 +71,7 @@ public class UserDetails {
 		return password;
 	}
 	
-	@Column(name="password", nullable=false)
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -80,7 +80,7 @@ public class UserDetails {
 		return age;
 	}
 	
-	@Column(name="age", nullable=false)
+
 	public void setAge(String age) {
 		this.age = age;
 	}
@@ -89,7 +89,7 @@ public class UserDetails {
 		return dateofbirth;
 	}
 	
-	@Column(name="dateofbirth", nullable=false)
+
 	public void setDateofbirth(String dateofbirth) {
 		this.dateofbirth = dateofbirth;
 	}

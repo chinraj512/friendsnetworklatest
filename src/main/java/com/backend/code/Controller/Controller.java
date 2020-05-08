@@ -21,7 +21,6 @@ import com.backend.code.Repoistry.FriendsNetworkRepoistry;
 public class Controller {
 	@Autowired
 	
-	@Resource
 	FriendsNetworkRepoistry repo;
 	UserDetails user;
 	 @GetMapping("/enf")
