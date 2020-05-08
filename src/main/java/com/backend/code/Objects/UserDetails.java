@@ -20,7 +20,7 @@ public class UserDetails {
 	private String gender;
 	private String phonenumber;
 	private String password;
-	private String age;
+	private int age;
 	private String dateofbirth;
 	
 	public int getUserid() {
@@ -76,12 +76,12 @@ public class UserDetails {
 		this.password = password;
 	}
 	
-	public String getAge() {
+	public int getAge() {
 		return age;
 	}
 	
 
-	public void setAge(String age) {
+	public void setAge(int age) {
 		this.age = age;
 	}
 	

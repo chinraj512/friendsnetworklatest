@@ -16,7 +16,7 @@ user.setEmail(rs.getString("email"));
 user.setPhonenumber(rs.getString("phonenumber"));;
 user.setDateofbirth(rs.getString("dateofbirth"));
 user.setGender(rs.getString("gender"));
-user.setAge(rs.getString("age"));
+user.setAge(rs.getInt("age"));
 return user;
 }
 }

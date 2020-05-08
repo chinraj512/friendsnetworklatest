@@ -42,4 +42,18 @@ public void insertUsersDetails(@RequestBody UserDetails user)
     template.update(sql,param, holder);
 
 }
+public void profile(com.backend.code.Objects.profile userprofile) {
+        
+        final String sql = "INSERT INTO profile(user_id, school, college, degree,work, locality)VALUES (:userid, :school ,:college , :degree, :work, :locality);";
+    KeyHolder holder = new GeneratedKeyHolder();
+    SqlParameterSource param = new MapSqlParameterSource()
+.addValue("userid",userprofile.getUserId())
+.addValue("school", userprofile.getSchool())
+.addValue("college", userprofile.getCollege())
+.addValue("degree", userprofile.getDegree())
+.addValue("work",userprofile.getWork())
+.addValue("locality", userprofile.getLocality());
+    
+    template.update(sql,param, holder); 
+}
 }
