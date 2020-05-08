@@ -23,7 +23,7 @@ public class Controller {
 	
 	FriendsNetworkRepoistry repo;
 	UserDetails user;
-	 @GetMapping("/enf")
+	 @GetMapping("/enff")
 	 public String Hello()
 	 {
 		 

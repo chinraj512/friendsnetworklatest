@@ -23,7 +23,7 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
 @Override
 public List<UserDetails> findById(int id) {
 	System.out.println(id);
-    return template.query("select * from userdetails where userid=1", new UserDetailsRowMapper());
+    return template.query("select * from userdetails where userid=:id", new UserDetailsRowMapper());
 }
 
 public void insertUsersDetails(@RequestBody UserDetails user)
