@@ -9,7 +9,6 @@ public class UserDetailsRowMapper implements RowMapper<UserDetails> {
 @Override
 public UserDetails mapRow(ResultSet rs, int arg1) throws SQLException {
 UserDetails user = new UserDetails();
-user.setUserid(rs.getInt("userid"));
 user.setUsername(rs.getString("username"));
 user.setPassword(rs.getString("password"));
 user.setEmail(rs.getString("email"));

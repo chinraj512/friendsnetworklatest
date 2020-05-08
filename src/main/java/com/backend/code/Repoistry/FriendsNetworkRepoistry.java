@@ -22,15 +22,15 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
 }  
 @Override
 public List<UserDetails> findById(int id) {
-return template.query("select * from userdetails where userid=id", new UserDetailsRowMapper());
+	System.out.println(id);
+    return template.query("select * from userdetails where userid=1", new UserDetailsRowMapper());
 }
 
 public void insertUsersDetails(@RequestBody UserDetails user)
 {
-	final String sql = "INSERT INTO userdetails(userid, username, password, email, phonenumber, dateofbirth, gender, age)VALUES (:userid, :username ,:password , :email, :phonenumber, :dateofbirth, :gender, :age);";
+	final String sql = "INSERT INTO userdetails( username, password, email, phonenumber, dateofbirth, gender, age)VALUES (:username ,:password , :email, :phonenumber, :dateofbirth, :gender, :age);";
     KeyHolder holder = new GeneratedKeyHolder();
     SqlParameterSource param = new MapSqlParameterSource()
-.addValue("userid",user.getUserid())
 .addValue("username", user.getUsername())
 .addValue("password", user.getPassword())
 .addValue("email",user.getEmail())
