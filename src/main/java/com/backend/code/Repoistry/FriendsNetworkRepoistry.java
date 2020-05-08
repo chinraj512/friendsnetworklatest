@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 import com.backend.code.Objects.UserDetails;
 
@@ -19,25 +21,25 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         this.template = template;  
 }  
 @Override
-public List<UserDetails> findAll() {
-return template.query("select * from userDetails", new UserDetailsRowMapper());
+public List<UserDetails> findById(int id) {
+return template.query("select * from userdetails where userid=id", new UserDetailsRowMapper());
 }
-@Override
-public void insertUserDetails(UserDetails user) {
-	
- final String sql = "insert into userdetails(user_id, username , email,dob,gender,age,password) values( :user_id, :username, :email, :dob, :gender, :age, :password)";
-        KeyHolder holder = new GeneratedKeyHolder();
-        SqlParameterSource param = new MapSqlParameterSource()
-.addValue("userId", user.getUser_id())
-.addValue("userName", user.getUserName())
-.addValue("email", user.getEmailId())
-.addValue("dob", user.getDateOfBirth())
-.addValue("gender", user.getGender())
-.addValue("age", user.getAge())
-.addValue("password", user.getPassword());
-        
-        template.update(sql,param, holder);
-}
-	
 
+public void insertUsersDetails(@RequestBody UserDetails user)
+{
+	final String sql = "INSERT INTO userdetails(userid, username, password, email, phonenumber, dateofbirth, gender, age)VALUES (:userid, :username ,:password , :email, :phonenumber, :dateofbirth, :gender, :age);";
+    KeyHolder holder = new GeneratedKeyHolder();
+    SqlParameterSource param = new MapSqlParameterSource()
+.addValue("userid",user.getUserid())
+.addValue("username", user.getUsername())
+.addValue("password", user.getPassword())
+.addValue("email",user.getEmail())
+.addValue("phonenumber", user.getPhonenumber())
+.addValue("dateofbirth", user.getDateofbirth())
+.addValue("gender", user.getGender())
+.addValue("age", user.getAge());
+    
+    template.update(sql,param, holder);
+
+}
 }

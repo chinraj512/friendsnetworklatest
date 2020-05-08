@@ -6,6 +6,7 @@ import com.backend.code.Objects.UserDetails;
 
 public interface FriendsNetworkInterface {
 
-	List<UserDetails> findAll();
-	void insertUserDetails(UserDetails obj);
+	List<UserDetails> findById(int userid);
+	void insertUsersDetails(UserDetails user);
+	
 }

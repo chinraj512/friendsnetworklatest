@@ -6,34 +6,40 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.code.Objects.UserDetails;
 import com.backend.code.Repoistry.FriendsNetworkRepoistry;
 
 @RestController
-@RequestMapping(value="/signup" )
+@RequestMapping("/signup" )
 public class Controller {
-	@Resource
 	@Autowired
-	FriendsNetworkRepoistry repo;
 	
+	@Resource
+	FriendsNetworkRepoistry repo;
+	UserDetails user;
 	 @GetMapping("/enf")
 	 public String Hello()
 	 {
+		 
 		 return "HEllo World";
 	 }
-	 @GetMapping("/AllUsersDetails")
-	 public List<UserDetails> findAll()
+	 @GetMapping(path="/{userid}")
+	 public List<UserDetails> findById(@PathVariable ("userid") int userid )
 	 {
-		 return repo.findAll();
+		 return repo.findById(userid);
 	 }
 	 @PostMapping("/createUser")
-	 public void createUser(@RequestBody UserDetails user)
+	 public void insertUsersDetails(@RequestBody UserDetails user)
 	 {
-		repo.insertUserDetails(user); 
+		 repo.insertUsersDetails(user);
 	 }
+	
+
 }

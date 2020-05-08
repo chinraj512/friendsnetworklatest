@@ -12,73 +12,90 @@ import javax.persistence.Table;
 @Entity
 @Table(name="userdetails")
 public class UserDetails {
-	private int user_id;
-	private String userName;
-	private String emailId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int userid;
+	private String username;
+	private String email;
 	private String gender;
-	private String phoneNumber;
+	private String phonenumber;
 	private String password;
 	private String age;
-	private String dateOfBirth;
+	private String dateofbirth;
 	
-	   @Column(name = "genders", nullable = false)
-	public String getAge() {
-		return age;
-	}
-	public void setAge(String age) {
-		this.age = age;
-	}
-	   @Column(name = "dateofbirth", nullable = false)
-	public String getDateOfBirth() {
-		return dateOfBirth;
-	}
-	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
-	}
-	 @Id
-	 @GeneratedValue(strategy = GenerationType.IDENTITY)
-	public int getUser_id() {
-		return user_id;
+	public int getUserid() {
+		return userid;
 	}
 	
-	public void setUserId(int user_id) {
-		this.user_id = user_id;
+	public void setUserid(int userid) {
+		this.userid = userid;
 	}
-	@Column(name = "username", nullable = false)
-	public String getUserName() {
-		return userName;
+	
+	public String getUsername() {
+		return username;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	
+	@Column(name="username", nullable=false)
+	public void setUsername(String username) {
+		this.username = username;
 	}
-   @Column(name = "email", nullable = false)
-	public String getEmailId() {
-		return emailId;
+	
+	public String getEmail() {
+		return email;
 	}
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
+	
+	@Column(name="email", nullable=false)
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	@Column(name = "sex", nullable = false)
+	
 	public String getGender() {
 		return gender;
 	}
+	
+	@Column(name="gender", nullable=false)
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	 @Column(name = "phonenumber", nullable = false)
-	public String getPhoneNumber() {
-		return phoneNumber;
+	
+	public String getPhonenumber() {
+		return phonenumber;
 	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	
+	@Column(name="phonenumber", nullable=false)
+	public void setPhonenumber(String phonenumber) {
+		this.phonenumber = phonenumber;
 	}
-	@Column(name = "password", nullable = false)
+	
 	public String getPassword() {
 		return password;
 	}
+	
+	@Column(name="password", nullable=false)
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public String getAge() {
+		return age;
+	}
+	
+	@Column(name="age", nullable=false)
+	public void setAge(String age) {
+		this.age = age;
+	}
+	
+	public String getDateofbirth() {
+		return dateofbirth;
+	}
+	
+	@Column(name="dateofbirth", nullable=false)
+	public void setDateofbirth(String dateofbirth) {
+		this.dateofbirth = dateofbirth;
+	}
+
+	
+	
 	
 	
 
