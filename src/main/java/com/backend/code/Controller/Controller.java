@@ -23,11 +23,12 @@ public class Controller {
 	
 	FriendsNetworkRepoistry repo;
 	UserDetails user;
-	 @GetMapping("/enff")
-	 public String Hello()
+
+	 @GetMapping("/addprofile")
+	 public String profile(@RequestBody com.backend.code.Objects.profile userprofile)
 	 {
-		 
-		 return "HEllo World";
+		  repo.profile(userprofile);
+		  return "success";
 	 }
      @GetMapping("/user")
      public List<UserDetails> findById(@RequestParam(value="userid") int userid)
