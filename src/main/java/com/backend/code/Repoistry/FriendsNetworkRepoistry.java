@@ -10,9 +10,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
+import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
-
+import com.backend.code.Objects.userProfile;
 @Repository
 public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
 
@@ -21,9 +21,10 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         this.template = template;  
 }  
 @Override
-public List<UserDetails> findById(int id) {
-	System.out.println(id);
-    return template.query("select * from userdetails where userid=:id", new UserDetailsRowMapper());
+public List<userProfile> findById(int id) {
+	SqlParameterSource param = new MapSqlParameterSource()
+.addValue("id", id);
+    return template.query("select * from userdetails left join profile on userdetails.userid=profile.user_id where userdetails.userid=:id  ",param, new UserDetailsRowMapper());
 }
 
 public void insertUsersDetails(@RequestBody UserDetails user)
@@ -55,5 +56,21 @@ public void profile(com.backend.code.Objects.profile userprofile) {
 .addValue("locality", userprofile.getLocality());
     
     template.update(sql,param, holder); 
+}
+public void saveImage(ImageModel img) {
+    KeyHolder holder = new GeneratedKeyHolder();
+    final String sql = "insert into ImageModel(picid,name,type,picbyte) values(:picId,:name,:type,:picByte)";
+    System.out.println(img.getPicByte());
+    SqlParameterSource param = new MapSqlParameterSource()
+.addValue("picId",img.getPicId())
+.addValue("name", img.getName())
+.addValue("type",img.getType())
+.addValue("picByte",img.getPicByte());
+template.update(sql,param, holder);
+}
+public List<ImageModel> findImageByName(int imageId) {
+    SqlParameterSource param = new MapSqlParameterSource()
+    .addValue("picId",imageId);
+	return  template.query("select * from  imageModel where picid=:picId",param,new ImageMapper());
 }
 }
