@@ -10,7 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
+import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
 
 @Repository
@@ -55,5 +55,21 @@ public void profile(com.backend.code.Objects.profile userprofile) {
 .addValue("locality", userprofile.getLocality());
     
     template.update(sql,param, holder); 
+}
+public void saveImage(ImageModel img) {
+    KeyHolder holder = new GeneratedKeyHolder();
+    final String sql = "insert into ImageModel(picid,name,type,picbyte) values(:picId,:name,:type,:picByte)";
+    System.out.println(img.getPicByte());
+    SqlParameterSource param = new MapSqlParameterSource()
+.addValue("picId",img.getPicId())
+.addValue("name", img.getName())
+.addValue("type",img.getType())
+.addValue("picByte",img.getPicByte());
+template.update(sql,param, holder);
+}
+public List<ImageModel> findImageByName(int imageId) {
+    SqlParameterSource param = new MapSqlParameterSource()
+    .addValue("picId",imageId);
+	return  template.query("select * from  imageModel where picid=:picId",param,new ImageMapper());
 }
 }
