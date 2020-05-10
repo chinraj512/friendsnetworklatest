@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
-
+import com.backend.code.Objects.userProfile;
 @Repository
 public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
 
@@ -21,9 +21,10 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         this.template = template;  
 }  
 @Override
-public List<UserDetails> findById(int id) {
-	System.out.println(id);
-    return template.query("select * from userdetails where userid=:id", new UserDetailsRowMapper());
+public List<userProfile> findById(int id) {
+	SqlParameterSource param = new MapSqlParameterSource()
+.addValue("id", id);
+    return template.query("select * from userdetails left join profile on userdetails.userid=profile.user_id where userdetails.userid=:id  ",param, new UserDetailsRowMapper());
 }
 
 public void insertUsersDetails(@RequestBody UserDetails user)
