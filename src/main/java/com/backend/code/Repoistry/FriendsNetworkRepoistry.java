@@ -1,6 +1,12 @@
 package com.backend.code.Repoistry;
 
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,65 +18,159 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
+import com.backend.code.Objects.addComment;
+import com.backend.code.Objects.addFriend;
+import com.backend.code.Objects.post;
 import com.backend.code.Objects.userProfile;
+
 @Repository
 public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
 
-	NamedParameterJdbcTemplate template;
-	public FriendsNetworkRepoistry(NamedParameterJdbcTemplate template) {  
-        this.template = template;  
-}  
-@Override
-public List<userProfile> findById(int id) {
-	SqlParameterSource param = new MapSqlParameterSource()
-.addValue("id", id);
-    return template.query("select * from userdetails left join profile on userdetails.userid=profile.user_id where userdetails.userid=:id  ",param, new UserDetailsRowMapper());
-}
+    NamedParameterJdbcTemplate template;
 
-public void insertUsersDetails(@RequestBody UserDetails user)
-{
-	final String sql = "INSERT INTO userdetails( username, password, email, phonenumber, dateofbirth, gender, age)VALUES (:username ,:password , :email, :phonenumber, :dateofbirth, :gender, :age);";
-    KeyHolder holder = new GeneratedKeyHolder();
-    SqlParameterSource param = new MapSqlParameterSource()
-.addValue("username", user.getUsername())
-.addValue("password", user.getPassword())
-.addValue("email",user.getEmail())
-.addValue("phonenumber", user.getPhonenumber())
-.addValue("dateofbirth", user.getDateofbirth())
-.addValue("gender", user.getGender())
-.addValue("age", user.getAge());
-    
-    template.update(sql,param, holder);
+    public FriendsNetworkRepoistry(NamedParameterJdbcTemplate template) {
+        this.template = template;
+    }
 
-}
-public void profile(com.backend.code.Objects.profile userprofile) {
-        
+    @Override
+    public List<userProfile> findById(int id) {
+        SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
+        return template.query(
+                "select * from userdetails left join profile on userdetails.userid=profile.user_id where userdetails.userid=:id  ",
+                param, new UserDetailsRowMapper());
+    }
+
+    public void insertUsersDetails(@RequestBody UserDetails user) {
+        final String sql = "INSERT INTO userdetails( username, password, email, phonenumber, dateofbirth, gender, age)VALUES (:username ,:password , :email, :phonenumber, :dateofbirth, :gender, :age);";
+        KeyHolder holder = new GeneratedKeyHolder();
+        SqlParameterSource param = new MapSqlParameterSource().addValue("username", user.getUsername())
+                .addValue("password", user.getPassword()).addValue("email", user.getEmail())
+                .addValue("phonenumber", user.getPhonenumber()).addValue("dateofbirth", user.getDateofbirth())
+                .addValue("gender", user.getGender()).addValue("age", user.getAge());
+
+        template.update(sql, param, holder);
+
+    }
+
+    public void profile(com.backend.code.Objects.profile userprofile) {
+
         final String sql = "INSERT INTO profile(user_id, school, college, degree,work, locality)VALUES (:userid, :school ,:college , :degree, :work, :locality);";
+        KeyHolder holder = new GeneratedKeyHolder();
+        SqlParameterSource param = new MapSqlParameterSource().addValue("userid", userprofile.getUserId())
+                .addValue("school", userprofile.getSchool()).addValue("college", userprofile.getCollege())
+                .addValue("degree", userprofile.getDegree()).addValue("work", userprofile.getWork())
+                .addValue("locality", userprofile.getLocality());
+
+        template.update(sql, param, holder);
+    }
+
+    public void saveImage(ImageModel img) {
+        KeyHolder holder = new GeneratedKeyHolder();
+        final String sql = "insert into ImageModel(picid,name,type,picbyte) values(:picId,:name,:type,:picByte)";
+        System.out.println(img.getPicByte());
+        SqlParameterSource param = new MapSqlParameterSource().addValue("picId", img.getPicId())
+                .addValue("name", img.getName()).addValue("type", img.getType()).addValue("picByte", img.getPicByte());
+        template.update(sql, param, holder);
+    }
+
+    public List<ImageModel> findImageByName(int imageId) {
+        SqlParameterSource param = new MapSqlParameterSource().addValue("picId", imageId);
+        return template.query("select * from  imageModel where picid=:picId", param, new ImageMapper());
+    }
+
+    public void addPost(post p) {
+        
+        Date today = new Date();
+        DateFormat df = new SimpleDateFormat("dd-MM-yy HH:mm:SS z");
+        df.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+        String IST = df.format(today);
+        System.out.println("Date in Indian Timezone (IST) : " + IST);
+
+    final String sql = "insert into post(userid,picid,status,location,likecount,commentcount,date) values(:userId,:picId,:status,:location,:likeCount,:commentCount,:date)";
     KeyHolder holder = new GeneratedKeyHolder();
     SqlParameterSource param = new MapSqlParameterSource()
-.addValue("userid",userprofile.getUserId())
-.addValue("school", userprofile.getSchool())
-.addValue("college", userprofile.getCollege())
-.addValue("degree", userprofile.getDegree())
-.addValue("work",userprofile.getWork())
-.addValue("locality", userprofile.getLocality());
-    
-    template.update(sql,param, holder); 
+    .addValue("postId",p.getPostId())
+    .addValue("userId",p.getUserId())
+    .addValue("picId",p.getPicId())
+    .addValue("status",p.getStatus())
+    .addValue("location",p.getLocation())
+    .addValue("likeCount",p.getLikeCount())
+    .addValue("commentCount",p.getCommentCount())
+    .addValue("date",IST);
+    template.update(sql,param,holder);
 }
-public void saveImage(ImageModel img) {
+public void addLike(com.backend.code.Objects.addLike like,int userId) {
+    final String sql1 ="insert into liketracker(postid,userid) values(:postId,:userId)";
+    final String sql2="update post set likecount=:likeCount where postid=:postId";
     KeyHolder holder = new GeneratedKeyHolder();
-    final String sql = "insert into ImageModel(picid,name,type,picbyte) values(:picId,:name,:type,:picByte)";
-    System.out.println(img.getPicByte());
-    SqlParameterSource param = new MapSqlParameterSource()
-.addValue("picId",img.getPicId())
-.addValue("name", img.getName())
-.addValue("type",img.getType())
-.addValue("picByte",img.getPicByte());
-template.update(sql,param, holder);
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("postId",like.postId)
+    .addValue("userId",userId)
+    .addValue("likeCount",like.likeCount);
+    template.update(sql1,param,holder);
+    template.update(sql2,param,holder);
 }
-public List<ImageModel> findImageByName(int imageId) {
-    SqlParameterSource param = new MapSqlParameterSource()
-    .addValue("picId",imageId);
-	return  template.query("select * from  imageModel where picid=:picId",param,new ImageMapper());
+public void addComment(addComment comment, int userId) {
+    final String sql1 ="insert into commenttracker(postid,userid,comment) values(:postId,:userId,:comment)";
+    final String sql2="update post set commentcount=:commentCount where postid=:postId";
+    KeyHolder holder = new GeneratedKeyHolder();
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("postId",comment.postid)
+    .addValue("userId",userId)
+    .addValue("commentCount",comment.commentCount)
+    .addValue("comment",comment.comment);
+    template.update(sql1,param,holder);
+    template.update(sql2,param,holder);
+}
+
+public void addFriend(addFriend af, int userId) {
+    int user1;
+    int user2;
+    if(af.getUser1()>userId)
+    {
+       user1=userId;
+       user2=af.getUser1();
+    }
+    else
+    {
+       user2=userId;
+       user1=af.getUser1();
+    }
+    final String sql="insert into friendsrelation(user1,user2,relation,lastaction) values (:user1,:user2,:relation,:lastAction)";
+    KeyHolder holder = new GeneratedKeyHolder();
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("user1",user1)
+    .addValue("user2",user2)
+    .addValue("relation",af.getRelation())
+    .addValue("lastAction",af.getLastAction());
+    template.update(sql,param,holder);
+}
+
+public void removeFriend(com.backend.code.Objects.addFriend af, int userId){
+            final String sql="delete from friendsrelation where user1=:userId and user2=:user1 or user1=:user1 and user2=:userId";
+            KeyHolder holder = new GeneratedKeyHolder();
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("user1",af.getUser1())
+    .addValue("userId",userId);
+    template.update(sql,param,holder);
+        }
+
+public void removeLike(com.backend.code.Objects.addLike like, int userId) {
+    final String sql="delete from liketracker where postid=:postId and userid=:userId";
+    KeyHolder holder = new GeneratedKeyHolder();
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("postId",like.postId)
+    .addValue("userId",userId);
+    template.update(sql,param,holder);
+}
+
+public void removeComment(com.backend.code.Objects.addComment comment, int userId) {
+    final String sql="delete from commenttracker where postid=:postId and userid=:userId and commentid=:commentId";
+    KeyHolder holder = new GeneratedKeyHolder();
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("postId",comment.postid)
+    .addValue("userId",userId)
+    .addValue("commentId",comment.commentid);
+    template.update(sql,param,holder);
 }
 }
