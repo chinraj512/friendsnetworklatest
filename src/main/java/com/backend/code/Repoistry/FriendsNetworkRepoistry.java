@@ -3,8 +3,6 @@ package com.backend.code.Repoistry;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -20,7 +18,9 @@ import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
 import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addFriend;
+import com.backend.code.Objects.displayComment;
 import com.backend.code.Objects.post;
+import com.backend.code.Objects.postResult;
 import com.backend.code.Objects.userProfile;
 
 @Repository
@@ -173,4 +173,41 @@ public void removeComment(com.backend.code.Objects.addComment comment, int userI
     .addValue("commentId",comment.commentid);
     template.update(sql,param,holder);
 }
+
+public List<String> showFriends(int userId) {
+    final String sql="select username from userdetails where userid in (select user1 as user from friendsrelation where user2=:userId union select user2 as user from friendsrelation where user1=:userId)";
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("userId",userId);
+   return template.query(sql,param,new NameMapper());
+}
+
+public List<String> showLike(com.backend.code.Objects.addLike like, int userId) {
+    final String sql="select username from userdetails where userid in (select userid from liketracker where postid=:postId)";
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("postId",like.postId);
+    return template.query(sql,param,new NameMapper());
+}
+
+public List<com.backend.code.Objects.displayComment> showComment(com.backend.code.Objects.addComment comment, int userId) {
+    final String sql="select c.commentid,c.userid,c.comment,username from commenttracker as c join userdetails as u on c.userid=u.userid where postid=0";
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("postId",comment.postid);
+    return template.query(sql,param,new commentMapper());
+  }
+
+public List<postResult> showPost(int userId) {
+    final String sql="select p.postid ,u.userid, p.status,p.location,p.commentcount,p.likecount,p.date,u.username,i.name,i.type,i.picbyte from post p join userdetails u on p.userid=u.userid join imagemodel i on p.picid=i.picid where p.userid in (select user1 as user from friendsrelation where user2=:userId union select user2 as user from friendsrelation where user1=:userId)";
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("userId",userId);
+	return template.query(sql,param,new postMapper());
+}
+
+public List<UserDetails> login(UserDetails user) {
+    final String sql="SELECT EXISTS (SELECT * FROM userdetails WHERE email = :email AND password = :password)";
+      SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("email",user.getEmail())
+    .addValue("password",user.getPassword());
+    return template.query(sql,param,new UserDetailsRowMapper());
+}
+
 }

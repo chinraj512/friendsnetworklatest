@@ -23,7 +23,9 @@ import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
 import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addLike;
+import com.backend.code.Objects.displayComment;
 import com.backend.code.Objects.post;
+import com.backend.code.Objects.postResult;
 import com.backend.code.Repoistry.FriendsNetworkRepoistry;
 
 @RestController
@@ -83,6 +85,11 @@ public class Controller {
 		repo.removeLike(like,userId);
 		return "like deleted";
 	}
+	@GetMapping("/showLike/{userid}")
+	public List<String> showLike(@RequestBody addLike like,@PathVariable("userid") int userId)
+	{
+		return repo.showLike(like,userId);
+	}
 	@PostMapping("/addComment/{userid}")
 	public String addComment(@RequestBody addComment comment,@PathVariable("userid") int userId){
 		repo.addComment(comment,userId);
@@ -92,6 +99,11 @@ public class Controller {
 	public String removeComment(@RequestBody addComment comment,@PathVariable("userid") int userId){
 		repo.removeComment(comment,userId);
 		return "comment deleted";
+	}
+	@GetMapping("/showComment/{userid}")
+	public List<displayComment> showComment(@RequestBody addComment comment,@PathVariable("userid") int userId)
+	{
+       return repo.showComment(comment,userId);
 	}
 	@PostMapping("/addFriend/{userid}")
 	public String addFriend(@RequestBody com.backend.code.Objects.addFriend Af, @PathVariable("userid") int userId)
@@ -104,6 +116,23 @@ public class Controller {
 	{
 		repo.removeFriend(Af,userId);
 		return "friend removed";
+	}
+	@GetMapping("/showFriends/{userid}")
+	public List<String> showFriends(@PathVariable("userid") int userId)
+	{
+		return repo.showFriends(userId);
+	}
+	
+	@GetMapping("/showPost/{userid}")
+	public List<postResult> showPost(@PathVariable("userid") int userId)
+	{
+         return repo.showPost(userId);
+	}
+	
+	@GetMapping("/login")
+	public List<UserDetails> login(@RequestBody UserDetails user)
+	{
+		return repo.login(user);
 	}
 	public static byte[] compressBytes(byte[] data) {
 		Deflater deflater = new Deflater();
