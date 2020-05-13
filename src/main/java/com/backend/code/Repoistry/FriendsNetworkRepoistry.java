@@ -18,7 +18,6 @@ import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
 import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addFriend;
-import com.backend.code.Objects.displayComment;
 import com.backend.code.Objects.post;
 import com.backend.code.Objects.postResult;
 import com.backend.code.Objects.userProfile;
@@ -200,14 +199,6 @@ public List<postResult> showPost(int userId) {
     SqlParameterSource param =new MapSqlParameterSource()
     .addValue("userId",userId);
 	return template.query(sql,param,new postMapper());
-}
-
-public List<UserDetails> login(UserDetails user) {
-    final String sql="SELECT EXISTS (SELECT * FROM userdetails WHERE email = :email AND password = :password)";
-      SqlParameterSource param =new MapSqlParameterSource()
-    .addValue("email",user.getEmail())
-    .addValue("password",user.getPassword());
-    return template.query(sql,param,new UserDetailsRowMapper());
 }
 
 }
