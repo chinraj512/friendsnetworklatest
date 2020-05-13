@@ -1,6 +1,7 @@
 package com.backend.code.Repoistry;
 
 import java.util.Date;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -35,22 +36,34 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
     public List<userProfile> findById(int id) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
         return template.query(
-                "select * from userdetails left join profile on userdetails.userid=profile.user_id where userdetails.userid=:id  ",
+                "select * from userdetails left join profile on userdetails.userid=profile.user_id left join ImageModel on profile.picId=ImageModel.picId where userdetails.userid=:id  ",
                 param, new UserDetailsRowMapper());
     }
 
-    public void insertUsersDetails(@RequestBody UserDetails user) {
+    public void insertUsersDetails(@RequestBody UserDetails user) throws NoSuchAlgorithmException {
         final String sql = "INSERT INTO userdetails( username, password, email, phonenumber, dateofbirth, gender, age)VALUES (:username ,:password , :email, :phonenumber, :dateofbirth, :gender, :age);";
+        HashFunction hash=new HashFunction();
+        String hashPassword=hash.toHexString(hash.getSHA(user.getPassword()));
         KeyHolder holder = new GeneratedKeyHolder();
         SqlParameterSource param = new MapSqlParameterSource().addValue("username", user.getUsername())
-                .addValue("password", user.getPassword()).addValue("email", user.getEmail())
+                .addValue("password", hashPassword).addValue("email", user.getEmail())
                 .addValue("phonenumber", user.getPhonenumber()).addValue("dateofbirth", user.getDateofbirth())
                 .addValue("gender", user.getGender()).addValue("age", user.getAge());
 
         template.update(sql, param, holder);
 
     }
-
+    public List<userProfile> login(UserDetails user) throws NoSuchAlgorithmException  {
+    	HashFunction hash=new HashFunction();
+    	String hashPassword=hash.toHexString(hash.getSHA(user.getPassword()));
+    	user.setPassword(hashPassword);
+    	System.out.println(hashPassword);
+    	final String sql = "select userdetails.userid ,userdetails.username ,userdetails.email,userdetails.phonenumber,userdetails.age ,userdetails.gender ,userdetails.dateofbirth,profile.college ,profile.work ,profile.degree ,profile.locality ,profile.school,ImageModel.picId,ImageModel.name,ImageModel.type,ImageModel.picByte from userdetails  left join profile on userdetails.userid=profile.user_id left join on profile.picId=ImageModel.picId where userdetails.email=:email and userdetails.password=:password ";
+        SqlParameterSource param = new MapSqlParameterSource()
+        		.addValue("email", user.getEmail())
+        		.addValue("password",user.getPassword());
+    	return template.query(sql,param,new UserDetailsRowMapper());
+    }
     public void profile(com.backend.code.Objects.profile userprofile) {
 
         final String sql = "INSERT INTO profile(user_id, school, college, degree,work, locality)VALUES (:userid, :school ,:college , :degree, :work, :locality);";

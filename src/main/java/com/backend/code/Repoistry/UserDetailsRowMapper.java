@@ -3,7 +3,6 @@ package com.backend.code.Repoistry;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
-
 import com.backend.code.Objects.userProfile;
 public class UserDetailsRowMapper implements RowMapper<userProfile> {
 @Override
@@ -18,10 +17,13 @@ pro.username=rs.getString("username");
 pro.email=rs.getString("email");
 pro.gender=rs.getString("gender");
 pro.phonenumber=rs.getString("phonenumber");
-pro.password=rs.getString("password");
 pro.age=rs.getString("age");
 pro.dateofbirth=rs.getString("dateofbirth");
 pro.degree=rs.getString("degree");
+pro.picId=rs.getInt("picId");
+pro.name=rs.getString("name");
+pro.type=rs.getString("type");
+pro.picByte=rs.getBytes("picByte");
 return pro;
 }
 }
