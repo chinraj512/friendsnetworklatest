@@ -1,20 +1,29 @@
 package com.backend.code.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 @Entity
 @Table(name="profile")
 public class profile{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
     private String school;
     private String college;
     private String degree;
     private String work;
     private String locality;
-    
-    public void setUserId(int userId)
+    private int picId;
+    public int getPicId() {
+		return picId;
+	}
+	public void setPicId(int picId) {
+		this.picId = picId;
+	}
+	public void setUserId(int userId)
     {
         this.userId=userId;
     }
