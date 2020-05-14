@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
 import com.backend.code.Objects.addComment;
@@ -119,9 +120,14 @@ public class Controller {
 		return "friend removed";
 	}
 	@GetMapping("/showFriends/{userid}")
-	public List<String> showFriends(@PathVariable("userid") int userId)
+	public List<IdName> showFriends(@PathVariable("userid") int userId)
 	{
 		return repo.showFriends(userId);
+	}
+	@GetMapping("/showmembers")
+	public List<IdName> showMembers(@RequestParam (value="userid")int userid)
+	{
+		return repo.showMembers(userid);
 	}
 	
 	@GetMapping("/showPost/{userid}")

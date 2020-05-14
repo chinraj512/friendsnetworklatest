@@ -9,7 +9,7 @@ import javax.persistence.Table;
 public class ImageModel {
          @Id
          @GeneratedValue(strategy = GenerationType.IDENTITY)
-         private int picId;
+         private int picid;
          private String name;
          private String type;
          private byte[] picByte;
@@ -18,13 +18,13 @@ public class ImageModel {
              this.type=type;
              this.picByte=picByte;
         }
-        public void setPicId(int picId)
+        public void setPicId(int picid)
         {
-            this.picId=picId;
+            this.picid=picid;
         }
-        public int getPicId()
+        public int getPicid()
         {
-            return picId;
+            return picid;
         }
 		public void setName(String name)
          {

@@ -10,26 +10,26 @@ import javax.persistence.Table;
 public class profile{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private int userid;
     private String school;
     private String college;
     private String degree;
     private String work;
     private String locality;
-    private int picId;
-    public int getPicId() {
-		return picId;
+    private int picid;
+    public int getPicid() {
+		return picid;
 	}
-	public void setPicId(int picId) {
-		this.picId = picId;
+	public void setPicId(int picid) {
+		this.picid = picid;
 	}
-	public void setUserId(int userId)
+	public void setUserid(int userid)
     {
-        this.userId=userId;
+        this.userid=userid;
     }
-    public int getUserId()
+    public int getUserid()
     {
-        return userId;
+        return userid;
     }
     public void setSchool(String school)
     {
