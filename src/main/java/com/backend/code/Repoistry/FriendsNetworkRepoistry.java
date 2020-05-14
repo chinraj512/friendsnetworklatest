@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
 import com.backend.code.Objects.addComment;
@@ -57,8 +58,9 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
     	HashFunction hash=new HashFunction();
     	String hashPassword=hash.toHexString(hash.getSHA(user.getPassword()));
     	user.setPassword(hashPassword);
-    	System.out.println(hashPassword);
-    	final String sql = "select userdetails.userid ,userdetails.username ,userdetails.email,userdetails.phonenumber,userdetails.age ,userdetails.gender ,userdetails.dateofbirth,profile.college ,profile.work ,profile.degree ,profile.locality ,profile.school,ImageModel.picId,ImageModel.name,ImageModel.type,ImageModel.picByte from userdetails  left join profile on userdetails.userid=profile.user_id left join on profile.picId=ImageModel.picId where userdetails.email=:email and userdetails.password=:password ";
+    	final String sql = "select userdetails.userid ,userdetails.username ,userdetails.email,userdetails.phonenumber,userdetails.age ,userdetails.gender ,userdetails.dateofbirth,profile.college ,profile.work ,profile.degree ,profile.locality ,profile.school,ImageModel.picid,ImageModel.name,ImageModel.type,ImageModel.picByte from userdetails  left join profile on userdetails.userid=profile.userid \r\n" + 
+    			"left join ImageModel on profile.picid=ImageModel.picid\r\n" + 
+    			"where userdetails.email=:email and userdetails.password=:password ";
         SqlParameterSource param = new MapSqlParameterSource()
         		.addValue("email", user.getEmail())
         		.addValue("password",user.getPassword());
@@ -68,7 +70,7 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
 
         final String sql = "INSERT INTO profile(user_id, school, college, degree,work, locality)VALUES (:userid, :school ,:college , :degree, :work, :locality);";
         KeyHolder holder = new GeneratedKeyHolder();
-        SqlParameterSource param = new MapSqlParameterSource().addValue("userid", userprofile.getUserId())
+        SqlParameterSource param = new MapSqlParameterSource().addValue("userid", userprofile.getUserid())
                 .addValue("school", userprofile.getSchool()).addValue("college", userprofile.getCollege())
                 .addValue("degree", userprofile.getDegree()).addValue("work", userprofile.getWork())
                 .addValue("locality", userprofile.getLocality());
@@ -80,7 +82,7 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         KeyHolder holder = new GeneratedKeyHolder();
         final String sql = "insert into ImageModel(picid,name,type,picbyte) values(:picId,:name,:type,:picByte)";
         System.out.println(img.getPicByte());
-        SqlParameterSource param = new MapSqlParameterSource().addValue("picId", img.getPicId())
+        SqlParameterSource param = new MapSqlParameterSource().addValue("picId", img.getPicid())
                 .addValue("name", img.getName()).addValue("type", img.getType()).addValue("picByte", img.getPicByte());
         template.update(sql, param, holder);
     }
@@ -186,11 +188,16 @@ public void removeComment(com.backend.code.Objects.addComment comment, int userI
     template.update(sql,param,holder);
 }
 
-public List<String> showFriends(int userId) {
+public List<IdName> showFriends(int userId) {
     final String sql="select username from userdetails where userid in (select user1 as user from friendsrelation where user2=:userId union select user2 as user from friendsrelation where user1=:userId)";
     SqlParameterSource param =new MapSqlParameterSource()
     .addValue("userId",userId);
-   return template.query(sql,param,new NameMapper());
+   return template.query(sql,param,new IdNameMapper());
+}
+public List<IdName> showMembers(int userid){
+	final String sql="select userid,username from userdetails where userid!=:userid and userid not in (select userid1 as user from friendsrelation where userid2=:userid union select userid2 as user from friendsrelation where userid1=:userid)";
+	 SqlParameterSource param=new MapSqlParameterSource().addValue("userid", userid);
+	return template.query(sql,param,new IdNameMapper());
 }
 
 public List<String> showLike(com.backend.code.Objects.addLike like, int userId) {
