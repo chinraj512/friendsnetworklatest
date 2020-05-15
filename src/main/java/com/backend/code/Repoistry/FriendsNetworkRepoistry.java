@@ -23,6 +23,7 @@ import com.backend.code.Objects.addFriend;
 import com.backend.code.Objects.post;
 import com.backend.code.Objects.postResult;
 import com.backend.code.Objects.userProfile;
+import com.backend.code.Objects.userpass;
 
 @Repository
 public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
@@ -221,4 +222,10 @@ public List<postResult> showPost(int userId) {
 	return template.query(sql,param,new postMapper());
 }
 
+public List<userpass> findpassword(String username) {
+    final String sql="select email,password from userdetails where email=:username";
+    SqlParameterSource param =new MapSqlParameterSource()
+    .addValue("username",username);
+    return template.query(sql,param,new userpassMapper());
+}
 }

@@ -42,7 +42,7 @@ public class Controller {
 		repo.profile(userprofile);
 		return "success";
 	}
-
+	
 	@GetMapping("/user")
 	public List<com.backend.code.Objects.userProfile> findById(@RequestParam(value = "userid") int userid) {
 		return repo.findById(userid);
@@ -154,14 +154,12 @@ public class Controller {
 		return outputStream.toByteArray();
 
 	}
-
+    
 	public static byte[] decompressBytes(byte[] data) {
 		Inflater inflater = new Inflater();
 		inflater.setInput(data);
-
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
 		byte[] buffer = new byte[1024];
-
 		try {
 			while (!inflater.finished()) {
 				int count = inflater.inflate(buffer);
