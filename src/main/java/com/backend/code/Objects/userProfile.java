@@ -14,4 +14,8 @@ public class userProfile{
     public String degree;
     public String work;
     public String locality;
+    public int picId;
+    public String name;
+    public String type;
+    public byte[] picByte;
 }

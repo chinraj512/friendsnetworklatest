@@ -1,26 +1,35 @@
 package com.backend.code.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 @Entity
 @Table(name="profile")
 public class profile{
     @Id
-    private int userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int userid;
     private String school;
     private String college;
     private String degree;
     private String work;
     private String locality;
-    
-    public void setUserId(int userId)
+    private int picid;
+    public int getPicid() {
+		return picid;
+	}
+	public void setPicId(int picid) {
+		this.picid = picid;
+	}
+	public void setUserid(int userid)
     {
-        this.userId=userId;
+        this.userid=userid;
     }
-    public int getUserId()
+    public int getUserid()
     {
-        return userId;
+        return userid;
     }
     public void setSchool(String school)
     {

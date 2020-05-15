@@ -2,6 +2,7 @@ package com.backend.code.Controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.ImageModel;
 import com.backend.code.Objects.UserDetails;
 import com.backend.code.Objects.addComment;
@@ -24,6 +27,7 @@ import com.backend.code.Objects.addLike;
 import com.backend.code.Objects.displayComment;
 import com.backend.code.Objects.post;
 import com.backend.code.Objects.postResult;
+import com.backend.code.Objects.userProfile;
 import com.backend.code.Repoistry.FriendsNetworkRepoistry;
 
 @RestController
@@ -32,7 +36,7 @@ public class Controller {
 
 	FriendsNetworkRepoistry repo;
 	UserDetails user;
-
+ 
 	@GetMapping("/addprofile")
 	public String profile(@RequestBody com.backend.code.Objects.profile userprofile) {
 		repo.profile(userprofile);
@@ -45,7 +49,7 @@ public class Controller {
 	}
 
 	@PostMapping("/createUser")
-	public void insertUsersDetails(@RequestBody UserDetails user) {
+	public void insertUsersDetails(@RequestBody UserDetails user) throws NoSuchAlgorithmException {
 		repo.insertUsersDetails(user);
 	}
 
@@ -116,9 +120,14 @@ public class Controller {
 		return "friend removed";
 	}
 	@GetMapping("/showFriends/{userid}")
-	public List<String> showFriends(@PathVariable("userid") int userId)
+	public List<IdName> showFriends(@PathVariable("userid") int userId)
 	{
 		return repo.showFriends(userId);
+	}
+	@GetMapping("/showmembers")
+	public List<IdName> showMembers(@RequestParam (value="userid")int userid)
+	{
+		return repo.showMembers(userid);
 	}
 	
 	@GetMapping("/showPost/{userid}")
@@ -162,5 +171,13 @@ public class Controller {
 		}
 		return outputStream.toByteArray();
 	}
+	@GetMapping("/login")
+	 public List<userProfile> login(@RequestBody UserDetails user) throws NoSuchAlgorithmException
+	 {
+		 System.out.println(user.getEmail());
+		 List<userProfile> lis=repo.login(user);
+		 return lis;
+		 
+	 }
 
 }
