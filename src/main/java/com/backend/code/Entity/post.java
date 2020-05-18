@@ -1,24 +1,43 @@
-package com.backend.code.Objects;
+package com.backend.code.Entity;
 
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.backend.code.Entity.ImageModel;
+
+@Entity
 @Table(name="post")
 @SequenceGenerator(name="seq", initialValue=1, allocationSize=100)
 public class post {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
-    @Id int id;
+    @Id 
+    @Column(name = "postid")
     private int postId;
-    private int userId;
-    private int picId;
+    @JoinColumn(name = "userid")
+    @ManyToOne(cascade = CascadeType.ALL)
+    private UserDetails userDetails;
+    @OneToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name = "picid")
+    private ImageModel imagemodel;
+    @Column(name = "status")
     private String status;
+    @Column(name = "location")
     private String location;
+    @Column(name = "likecount")
     private int likeCount;
+    @Column(name = "commentcount")
     private int commentCount;
+    @Column(name = "date")
+    private String date;
     public int getPostId() {
         return postId;
     }
@@ -27,21 +46,20 @@ public class post {
         this.postId = postId;
     }
 
-    public int getUserId() {
-        return userId;
+    public UserDetails getUserDetails() {
+        return userDetails;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserId(UserDetails userDetails) {
+        this.userDetails = userDetails;
     }
 
-    public int getPicId() {
-        return picId;
-    }
-
-    public void setPicId(int picId) {
-        this.picId = picId;
-    }
+    public ImageModel getImageModel() {
+		return imagemodel;
+	}
+	public void setIamgeModel(ImageModel imagemodel) {
+		this.imagemodel = imagemodel;
+	}
 
     public String getStatus() {
         return status;

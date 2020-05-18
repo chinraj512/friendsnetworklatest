@@ -9,23 +9,27 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.code.Objects.IdName;
-import com.backend.code.Objects.ImageModel;
-import com.backend.code.Objects.UserDetails;
+import com.backend.code.Entity.ImageModel;
+import com.backend.code.Entity.UserDetails;
+import com.backend.code.Entity.profile;
+import com.backend.code.Exception.GlobalExceptionHandler;
+import com.backend.code.Exception.ResourceNotFoundException;
 import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addLike;
 import com.backend.code.Objects.displayComment;
-import com.backend.code.Objects.post;
+import com.backend.code.Entity.post;
 import com.backend.code.Objects.postResult;
 import com.backend.code.Objects.userProfile;
 import com.backend.code.Repoistry.FriendsNetworkRepoistry;
@@ -38,19 +42,33 @@ public class Controller {
 	UserDetails user;
  
 	@GetMapping("/addprofile")
-	public String profile(@RequestBody com.backend.code.Objects.profile userprofile) {
+	public String profile(@RequestBody profile userprofile) {
+		
 		repo.profile(userprofile);
 		return "success";
 	}
 	
 	@GetMapping("/user")
-	public List<com.backend.code.Objects.userProfile> findById(@RequestParam(value = "userid") int userid) {
-		return repo.findById(userid);
+	public ResponseEntity<?> findById(@RequestParam(value = "userid") int userid) {
+		List<userProfile> user =repo.findById(userid);
+		if(user.size()==0)
+		{
+			return ResponseEntity.ok().body("user not found with userid");
+		}
+		return ResponseEntity.ok().body(user);
 	}
 
 	@PostMapping("/createUser")
-	public void insertUsersDetails(@RequestBody UserDetails user) throws NoSuchAlgorithmException {
-		repo.insertUsersDetails(user);
+	public ResponseEntity<?> insertUsersDetails(@RequestBody UserDetails user) throws NoSuchAlgorithmException {
+		String result="successfully accepted";
+		try{
+		      repo.insertUsersDetails(user);
+		}
+		catch(DataIntegrityViolationException e)
+		{
+		     return ResponseEntity.ok().body("user is already registor"); 	
+		}
+		return ResponseEntity.ok().body(result);
 	}
 
 	@CrossOrigin(origins = "*")
@@ -58,8 +76,10 @@ public class Controller {
 	public String uplaodImage(@RequestParam("imageFile") MultipartFile file) throws IOException {
 		System.out.println("Original Image Byte Size - " + file.getBytes().length + " " + file.getOriginalFilename()
 				+ " " + file.getContentType());
-		ImageModel img = new ImageModel(file.getOriginalFilename(), file.getContentType(),
-				compressBytes(file.getBytes()));
+		ImageModel img = new ImageModel();
+				img.setName(file.getOriginalFilename());
+				img.setType(file.getContentType());
+				img.setPicByte(compressBytes(file.getBytes()));
 		repo.saveImage(img);
 		return "String";
 	}
@@ -114,10 +134,17 @@ public class Controller {
 		return "friend request sent";
 	}	
 	@PostMapping("/removeFriend/{userid}")
-	public String removeFriend(@RequestBody com.backend.code.Objects.addFriend Af,@PathVariable("userid") int userId)
+	public ResponseEntity<?> removeFriend(@RequestBody com.backend.code.Objects.addFriend Af,@PathVariable("userid") int userId)
 	{
-		repo.removeFriend(Af,userId);
-		return "friend removed";
+		System.out.println("ddfhdjj");
+		try{
+		    repo.removeFriend(Af,userId);
+		}
+		catch(NullPointerException e)
+		{
+            return ResponseEntity.ok().body("no values are supplied");  
+		}
+		return ResponseEntity.ok().body("friend Removed");
 	}
 	@GetMapping("/showFriends/{userid}")
 	public List<IdName> showFriends(@PathVariable("userid") int userId)
@@ -171,13 +198,4 @@ public class Controller {
 		}
 		return outputStream.toByteArray();
 	}
-	@GetMapping("/login")
-	 public List<userProfile> login(@RequestBody UserDetails user) throws NoSuchAlgorithmException
-	 {
-		 System.out.println(user.getEmail());
-		 List<userProfile> lis=repo.login(user);
-		 return lis;
-		 
-	 }
-
 }
