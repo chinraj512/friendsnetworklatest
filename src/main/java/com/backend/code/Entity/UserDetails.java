@@ -1,5 +1,6 @@
-package com.backend.code.Objects;
+package com.backend.code.Entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,13 +14,21 @@ import javax.persistence.Table;
 public class UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="userid",nullable=false,unique=true)
 	private int userid;
+	@Column(name="username",nullable=false)
 	private String username;
+	@Column(name="email",nullable=false,unique=true)
 	private String email;
+	@Column(name="gender",nullable=false)
 	private String gender;
+	@Column(name="phonenumber",nullable=false,unique=true)
 	private String phonenumber;
+	@Column(name="password",nullable=false)
 	private String password;
+	@Column(name="age",nullable=false)
 	private String age;
+	@Column(name="dateofbirth",nullable=false)
 	private String dateofbirth;
 	
 	public int getUserid() {
@@ -92,10 +101,4 @@ public class UserDetails {
 	public void setDateofbirth(String dateofbirth) {
 		this.dateofbirth = dateofbirth;
 	}
-
-	
-	
-	
-	
-
 }
