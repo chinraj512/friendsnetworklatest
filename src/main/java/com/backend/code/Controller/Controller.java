@@ -8,6 +8,8 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -49,17 +51,17 @@ public class Controller {
 	}
 	
 	@GetMapping("/user")
-	public ResponseEntity<?> findById(@RequestParam(value = "userid") int userid) {
+	public ResponseEntity<?> findById(@RequestParam(value = "userid") int userid) throws ResourceNotFoundException {
 		List<userProfile> user =repo.findById(userid);
 		if(user.size()==0)
 		{
-			return ResponseEntity.ok().body("user not found with userid");
-		}
+			throw new ResourceNotFoundException("user not found");
+		} 
 		return ResponseEntity.ok().body(user);
 	}
 
 	@PostMapping("/createUser")
-	public ResponseEntity<?> insertUsersDetails(@RequestBody UserDetails user) throws NoSuchAlgorithmException {
+	public ResponseEntity<?> insertUsersDetails(@Valid @RequestBody UserDetails user) throws NoSuchAlgorithmException {
 		String result="successfully accepted";
 		try{
 		      repo.insertUsersDetails(user);
@@ -85,15 +87,26 @@ public class Controller {
 	}
 
 	@GetMapping("/get/{imageName}")
-	public List<ImageModel> getImage(@PathVariable("imageName") int imageId) throws IOException {
+	public List<ImageModel> getImage(@PathVariable("imageName") int imageId) throws IOException, ResourceNotFoundException {
 		List<ImageModel> image = repo.findImageByName(imageId);
+		if(image==null)
+		{
+			throw new ResourceNotFoundException("Image is not found ");
+		}
 		return image;
 	}
 
 	@PostMapping("/Addpost")
-	public String addPost(@RequestBody post p) {
+	public ResponseEntity<String> addPost(@RequestBody post p) {
+		try {
 		repo.addPost(p);
-		return "post is successfully added";
+		}
+		catch(NullPointerException e)
+		{
+            return ResponseEntity.ok().body("no values are supplied");  
+		}
+		return ResponseEntity.ok().body("post added");
+	
 	}
 
 	@PostMapping("/addLike/{userid}")
@@ -108,7 +121,7 @@ public class Controller {
 		return "like deleted";
 	}
 	@GetMapping("/showLike/{userid}")
-	public List<String> showLike(@RequestBody addLike like,@PathVariable("userid") int userId)
+	public List<IdName> showLike(@RequestBody addLike like,@PathVariable("userid") int userId)
 	{
 		return repo.showLike(like,userId);
 	}
@@ -130,6 +143,7 @@ public class Controller {
 	@PostMapping("/addFriend/{userid}")
 	public String addFriend(@RequestBody com.backend.code.Objects.addFriend Af, @PathVariable("userid") int userId)
 	{
+		System.out.println(Af.getUser1());
 		repo.addFriend(Af,userId);
 		return "friend request sent";
 	}	

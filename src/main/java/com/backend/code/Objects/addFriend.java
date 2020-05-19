@@ -1,9 +1,11 @@
 package com.backend.code.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Table;
 
 @Table(name = "friendsrelation")
 public class addFriend{
+	@Column(name="user1" ,nullable=false)
     private int user1;
     private int relation;
     private int lastAction;
