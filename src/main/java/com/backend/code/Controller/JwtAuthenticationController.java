@@ -38,7 +38,7 @@ public class JwtAuthenticationController {
 		}
 		catch(BadCredentialsException e)
 		{
-		     return ResponseEntity.ok("not authinticated"); 
+		     return ResponseEntity.ok("not authenticated"); 
 		}		
 
 		final UserDetails userDetails = userDetailsService

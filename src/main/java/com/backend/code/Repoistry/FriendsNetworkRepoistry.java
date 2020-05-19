@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -40,15 +41,14 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
     public List<userProfile> findById(int id) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
         return template.query(
-                "select * from userdetails left join profile on userdetails.userid=profile.user_id left join ImageModel on profile.picId=ImageModel.picId where userdetails.userid=:id  ",
+                "select * from userdetails left join profile on userdetails.userid=profile.userid left join ImageModel on profile.picId=ImageModel.picId where userdetails.userid=:id  ",
                 param, new UserDetailsRowMapper());
     }
 
     public void insertUsersDetails(@RequestBody UserDetails user) throws NoSuchAlgorithmException {
         final String sql = "INSERT INTO userdetails( username, password, email, phonenumber, dateofbirth, gender, age)VALUES (:username ,:password , :email, :phonenumber, :dateofbirth, :gender, :age);";
-        String hashPassword="";
-        HashFunction hash=new HashFunction();
-        hashPassword=hash.toHexString(hash.getSHA(user.getPassword()));
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashPassword=passwordEncoder.encode(user.getPassword());
         KeyHolder holder = new GeneratedKeyHolder();
         System.out.println("gugguguguguiguigugiugui");
         SqlParameterSource param = new MapSqlParameterSource()
@@ -142,7 +142,7 @@ public void addFriend(addFriend af, int userId) {
        user2=userId;
        user1=af.getUser1();
     }
-    final String sql="insert into friendsrelation(user1,user2,relation,lastaction) values (:user1,:user2,:relation,:lastAction)";
+    final String sql="insert into friendsrelation(user1,user2,activity,lastuser) values (:user1,:user2,:relation,:lastAction)";
     KeyHolder holder = new GeneratedKeyHolder();
     SqlParameterSource param =new MapSqlParameterSource()
     .addValue("user1",user1)
@@ -192,11 +192,11 @@ public List<IdName> showMembers(int userid){
 	return template.query(sql,param,new IdNameMapper());
 }
 
-public List<String> showLike(com.backend.code.Objects.addLike like, int userId) {
-    final String sql="select username from userdetails where userid in (select userid from likec where postid=:postId)";
+public List<IdName> showLike(com.backend.code.Objects.addLike like, int userId) {
+    final String sql="select userid,username from userdetails where userid in (select userid from likec where postid=:postId)";
     SqlParameterSource param =new MapSqlParameterSource()
     .addValue("postId",like.postId);
-    return template.query(sql,param,new NameMapper());
+    return template.query(sql,param,new IdNameMapper());
 }
 
 public List<com.backend.code.Objects.displayComment> showComment(com.backend.code.Objects.addComment comment, int userId) {
