@@ -214,7 +214,7 @@ public List<postResult> showPost(int userId) {
 }
 
 public List<userpass> findpassword(String username) {
-    final String sql="select email,password from userdetails where email=:username";
+    final String sql="select userid,email,password from userdetails where email=:username";
     SqlParameterSource param =new MapSqlParameterSource()
     .addValue("username",username);
     return template.query(sql,param,new userpassMapper());

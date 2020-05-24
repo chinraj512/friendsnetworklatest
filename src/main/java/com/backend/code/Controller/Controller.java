@@ -99,7 +99,7 @@ public class Controller {
 	@PostMapping("/Addpost")
 	public ResponseEntity<String> addPost(@RequestBody post p) {
 		try {
-		repo.addPost(p);
+		  repo.addPost(p);
 		}
 		catch(NullPointerException e)
 		{

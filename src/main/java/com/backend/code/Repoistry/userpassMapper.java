@@ -11,6 +11,7 @@ public userpass mapRow(ResultSet rs, int arg1) throws SQLException {
 userpass pro =new userpass();
 pro.email=rs.getString("email");
 pro.password=rs.getString("password");
+pro.userid=rs.getInt("userid");
 return pro;
 }
 }
