@@ -1,4 +1,4 @@
-package com.backend.code.Controller;
+ package com.backend.code.Controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -160,6 +160,7 @@ public class Controller {
 		}
 		return ResponseEntity.ok().body("friend Removed");
 	}
+
 	@GetMapping("/showFriends/{userid}")
 	public List<IdName> showFriends(@PathVariable("userid") int userId)
 	{
