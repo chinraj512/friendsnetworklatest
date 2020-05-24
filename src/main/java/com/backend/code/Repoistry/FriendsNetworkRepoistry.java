@@ -67,7 +67,6 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
                 .addValue("school", userprofile.getSchool()).addValue("college", userprofile.getCollege())
                 .addValue("degree", userprofile.getDegree()).addValue("work", userprofile.getWork())
                 .addValue("locality", userprofile.getLocality()).addValue("picid", userprofile.getImageModel().getPicid());
-
         template.update(sql, param, holder);
     }
 
@@ -86,7 +85,6 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
     }
 
     public void addPost(post p) {
-        
     Date today = new Date();
     DateFormat df = new SimpleDateFormat("dd-MM-yy HH:mm:SS z");
     df.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
