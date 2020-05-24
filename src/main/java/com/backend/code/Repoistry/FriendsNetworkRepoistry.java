@@ -207,7 +207,7 @@ public List<com.backend.code.Objects.displayComment> showComment(com.backend.cod
   }
 
 public List<postResult> showPost(int userId) {
-    final String sql="select p.postid ,u.userid, p.status,p.location,p.commentcount,p.likecount,p.date,u.username,i.name,i.type,i.picbyte from post p join userdetails u on p.userid=u.userid join imagemodel i on p.picid=i.picid where p.userid in (select user1 as user from friendsrelation where user2=:userId union select user2 as user from friendsrelation where user1=:userId)";
+    final String sql="select p.postid ,u.userid, p.status,p.location,p.commentcount,p.likecount,p.date,u.username,i.name,i.type,i.picbyte,(case when exists(select userid,postid from likec where userid=:userid and postid=p.postid) then true when not(exists(select userid,postid from likec where userid=:userid and postid=p.postid) then false end) as liked from post p join userdetails u on p.userid=u.userid join imagemodel i on p.picid=i.picid where p.userid in (select user1 as user from friendsrelation where user2=:userId union select user2 as user from friendsrelation where user1=:userId) orderby p.date unoin select * from imagemodel i join profile p on p.userid=i.userid join post po on po.userid=p.userid where po.userid=p.userid ";
     SqlParameterSource param =new MapSqlParameterSource()
     .addValue("userId",userId);
 	return template.query(sql,param,new postMapper());
