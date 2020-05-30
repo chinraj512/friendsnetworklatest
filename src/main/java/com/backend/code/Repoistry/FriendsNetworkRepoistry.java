@@ -187,7 +187,7 @@ public List<IdName> showFriends(int userId) {
    return template.query(sql,param,new IdNameMapper());
 }
 public List<IdName> showMembers(int userid){
-	final String sql="select userid,username from userdetails where userid!=:userid and userid not in (select userid1 as user from friendsrelation where userid2=:userid union select userid2 as user from friendsrelation where userid1=:userid)";
+	final String sql="select userid,username from userdetails where userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)";
 	 SqlParameterSource param=new MapSqlParameterSource().addValue("userid", userid);
 	return template.query(sql,param,new IdNameMapper());
 }
@@ -218,5 +218,18 @@ public List<userpass> findpassword(String username) {
     SqlParameterSource param =new MapSqlParameterSource()
     .addValue("username",username);
     return template.query(sql,param,new userpassMapper());
+}
+public List<IdName> MemberSearch(String pattern,int userid) {
+	final String sql="select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) ";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("pattern",pattern)
+			.addValue("userid",userid);
+	return template.query(sql, param,new IdNameMapper());
+}
+
+public List<IdName> FriendSearch(String pattern,int userid){
+	final String sql="select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and(not (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) )";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("pattern",pattern)
+			.addValue("userid",userid);
+	return template.query(sql, param,new IdNameMapper());
 }
 }
