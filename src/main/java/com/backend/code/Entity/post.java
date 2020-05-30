@@ -1,5 +1,7 @@
 package com.backend.code.Entity;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.backend.code.Entity.ImageModel;
 
@@ -36,9 +40,29 @@ public class post {
     private int likeCount;
     @Column(name = "commentcount")
     private int commentCount;
-    @Column(name = "date")
-    private String date;
-    public int getPostId() {
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
+    public ImageModel getImagemodel() {
+		return imagemodel;
+	}
+
+	public void setImagemodel(ImageModel imagemodel) {
+		this.imagemodel = imagemodel;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public void setUserDetails(UserDetails userDetails) {
+		this.userDetails = userDetails;
+	}
+
+	public int getPostId() {
         return postId;
     }
 

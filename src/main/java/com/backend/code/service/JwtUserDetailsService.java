@@ -18,7 +18,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	FriendsNetworkRepoistry fr;
-
+    
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		List<userpass> t = fr.findpassword(username);

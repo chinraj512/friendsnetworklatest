@@ -22,7 +22,8 @@ public class postMapper implements RowMapper<postResult> {
         pr.location=rs.getString("location");
         pr.likeCount=rs.getInt("likecount");
         pr.commentCount=rs.getInt("commentcount");
-        pr.date=rs.getString("date");
+        pr.date=rs.getDate("date");
+        pr.liked=rs.getBoolean("liked");
         return pr;
     }
 
