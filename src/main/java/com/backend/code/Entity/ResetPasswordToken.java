@@ -5,21 +5,18 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="ConfirmationToken")
-public class ConfirmationToken {
+@Table(name="RestPasswordToken")
+public class ResetPasswordToken {
 
-    public ConfirmationToken() {
+    public ResetPasswordToken() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -35,18 +32,10 @@ public class ConfirmationToken {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "user_id")
-    private User user;
+    @Column(name="email")
+    private String email;
 
-    public ConfirmationToken(User user) {
-        this.user = user;
-        createdDate = new Date();
-        confirmationToken = UUID.randomUUID().toString();
-    }
- 
-
-	public long getTokenid() {
+    public long getTokenid() {
 		return tokenid;
 	}
 
@@ -70,15 +59,17 @@ public class ConfirmationToken {
 		this.createdDate = createdDate;
 	}
 
-	public User getUser() {
-		return user;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setEmail(String email) {
+		this.email = email;
 	}
-    
 
-    // getters and setters
+	public ResetPasswordToken(String email) {
+        this.email=email;
+        createdDate = new Date();
+        confirmationToken = UUID.randomUUID().toString();
+    }
 }
-
