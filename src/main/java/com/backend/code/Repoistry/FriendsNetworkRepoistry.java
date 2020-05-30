@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.IdPattern;
+
 import com.backend.code.Entity.ImageModel;
 import com.backend.code.Entity.UserDetails;
 import com.backend.code.Entity.profile;
@@ -220,7 +221,6 @@ public List<userpass> findpassword(String username) {
     .addValue("username",username);
     return template.query(sql,param,new userpassMapper());
 }
-
 public List<IdName> MemberSearch(String pattern,int userid) {
 	final String sql="select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) ";
 	SqlParameterSource param=new MapSqlParameterSource().addValue("pattern",pattern)
@@ -234,5 +234,6 @@ public List<IdName> FriendSearch(String pattern,int userid){
 			.addValue("userid",userid);
 	return template.query(sql, param,new IdNameMapper());
 }
+
 
 }

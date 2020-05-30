@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.IdPattern;
+
 import com.backend.code.Entity.ImageModel;
 import com.backend.code.Entity.UserDetails;
 import com.backend.code.Entity.profile;
@@ -214,6 +215,7 @@ public class Controller {
 		}
 		return outputStream.toByteArray();
 	}
+
 	@PostMapping("/searchformembers")
 	public List<IdName> MemberSearch(@RequestBody IdPattern idpatttern)
 	{
@@ -228,4 +230,5 @@ public class Controller {
 		int userid=idpatttern.userid;
 		return repo.FriendSearch(pattern,userid);		
 	}
+
 }
