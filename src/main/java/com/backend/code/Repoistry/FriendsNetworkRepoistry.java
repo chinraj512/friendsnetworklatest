@@ -234,5 +234,4 @@ public List<IdName> FriendSearch(String pattern,int userid){
 			.addValue("userid",userid);
 	return template.query(sql, param,new IdNameMapper());
 }
->>>>>>> 0bc46229e488255fecbef06ee016b53a004cca0f
 }
