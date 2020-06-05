@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.code.Objects.IdName;
+import com.backend.code.Objects.IdPattern;
 import com.backend.code.Entity.ImageModel;
 import com.backend.code.Entity.UserDetails;
 import com.backend.code.Entity.profile;
@@ -215,5 +216,19 @@ public class Controller {
 		} catch (DataFormatException e) {
 		}
 		return outputStream.toByteArray();
+	}
+	@PostMapping("/searchformembers")
+	public List<IdName> MemberSearch(@RequestBody IdPattern idpatttern)
+	{
+		String pattern=idpatttern.pattern;
+		int userid=idpatttern.userid;
+		return repo.MemberSearch(pattern,userid);		
+	}
+	@PostMapping("/searchforfriends")
+	public List<IdName> FriendSearch(@RequestBody IdPattern idpatttern)
+	{
+		String pattern=idpatttern.pattern;
+		int userid=idpatttern.userid;
+		return repo.FriendSearch(pattern,userid);		
 	}
 }

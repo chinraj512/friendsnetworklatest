@@ -37,7 +37,23 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
     public FriendsNetworkRepoistry(NamedParameterJdbcTemplate template) {
         this.template = template;
     }
-
+    public boolean findByEmailId(String email)
+    {
+    	final String sql="select userid,username from userdetails where email=:email";
+    	 SqlParameterSource param = new MapSqlParameterSource().addValue("email", email);
+    	 if(template.query(sql,param,new IdNameMapper()) != null)
+    		 return true;
+    	 else
+    		 return false;
+    }
+    public int updatepassword(String password,String email)
+    {
+    	final String sql="update userdetails set password=:password where email=:email";
+    	SqlParameterSource param = new MapSqlParameterSource().addValue("email", email).addValue("password", password);
+    	KeyHolder holder = new GeneratedKeyHolder();
+    	return (template.update(sql,param, holder));
+    	
+    }
     @Override
     public List<userProfile> findById(int id) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
@@ -158,7 +174,6 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         template.update(sql, param, holder);
         template.update(sql2, param, holder);
     }
-
     public void removeComment(com.backend.code.Objects.addComment comment, int userId) {
         final String sql = "delete from comment where postid=:postId and userid=:userId and commentid=:commentId";
         final String sql2 = "update post set commentcount=commentcount-1 where postid=:postId";
@@ -205,4 +220,19 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         SqlParameterSource param = new MapSqlParameterSource().addValue("username", username);
         return template.query(sql, param, new userpassMapper());
     }
+
+public List<IdName> MemberSearch(String pattern,int userid) {
+	final String sql="select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) ";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("pattern",pattern)
+			.addValue("userid",userid);
+	return template.query(sql, param,new IdNameMapper());
+}
+
+public List<IdName> FriendSearch(String pattern,int userid){
+	final String sql="select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and(not (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) )";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("pattern",pattern)
+			.addValue("userid",userid);
+	return template.query(sql, param,new IdNameMapper());
+}
+>>>>>>> 0bc46229e488255fecbef06ee016b53a004cca0f
 }

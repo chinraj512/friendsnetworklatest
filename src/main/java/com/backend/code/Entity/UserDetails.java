@@ -1,5 +1,7 @@
 package com.backend.code.Entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,7 +31,7 @@ public class UserDetails {
 	@Column(name="age",nullable=false)
 	private String age;
 	@Column(name="dateofbirth",nullable=false)
-	private String dateofbirth;
+	private Date dateofbirth;
 	
 	public int getUserid() {
 		return userid;
@@ -92,13 +94,14 @@ public class UserDetails {
 	public void setAge(String age) {
 		this.age = age;
 	}
-	
-	public String getDateofbirth() {
+
+	public Date getDateofbirth() {
 		return dateofbirth;
+	}
+
+	public void setDateofbirth(Date dateofbirth) {
+		this.dateofbirth = dateofbirth;
 	}
 	
 
-	public void setDateofbirth(String dateofbirth) {
-		this.dateofbirth = dateofbirth;
-	}
 }
