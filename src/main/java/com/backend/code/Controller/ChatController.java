@@ -27,13 +27,6 @@ public class ChatController {
 		simpMessagingTemplate.convertAndSendToUser(
 				chatMessage.getReceiver().trim(), "/queue", chatMessage); 
 	}
-
-	@MessageMapping("/send/{userCombination}")
-	public void sendPrivateMessage(@Payload ChatMessage chatMessage, @DestinationVariable String userCombination) {
-		System.out.println("jgggk");
-		simpMessagingTemplate.convertAndSend(
-				"/topic/message/"+userCombination,chatMessage); 
-	}
     
 	@MessageMapping("/addUser")
 	@SendTo("/topic/pubic")
