@@ -7,7 +7,6 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,7 +81,6 @@ public class UserAccountController {
     {
     	System.out.println("hvhgh");
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
-
         if(token != null)
         {
             User user = userRepository.findByEmailIgnoreCase(token.getUser().getEmail());
