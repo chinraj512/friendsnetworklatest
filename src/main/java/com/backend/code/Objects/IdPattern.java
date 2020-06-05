@@ -7,4 +7,3 @@ public class IdPattern {
 	public String pattern;
 	
 }
-

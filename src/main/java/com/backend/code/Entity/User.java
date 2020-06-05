@@ -1,11 +1,15 @@
 package com.backend.code.Entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name="user1")
@@ -25,9 +29,20 @@ public class User {
 	private String password;
 	@Column(name="age",nullable=false)
 	private String age;
+	@Column(name="dateofbirth" ,nullable=false)
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private Date dateofbirth;
 	@Column(name="isEnabled")
     private boolean isEnabled;
 	
+
+	
+	public Date getDateofbirth() {
+		return dateofbirth;
+	}
+	public void setDateofbirth(Date dateofbirth) {
+		this.dateofbirth = dateofbirth;
+	}
 	public long getUserid() {
 		return userid;
 	}
