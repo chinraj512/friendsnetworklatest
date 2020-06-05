@@ -10,7 +10,7 @@ public class postResult{
     public String location;
     public int likeCount;
     public int commentCount;
-    public  Date date;
+    public  String date;
     public String name;
     public String type;
     public byte[] picByte;

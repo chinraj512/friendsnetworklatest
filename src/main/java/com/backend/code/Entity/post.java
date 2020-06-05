@@ -22,7 +22,7 @@ import com.backend.code.Entity.ImageModel;
 @Table(name="post")
 @SequenceGenerator(name="seq", initialValue=1, allocationSize=100)
 public class post {
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id 
     @Column(name = "postid")
     private int postId;

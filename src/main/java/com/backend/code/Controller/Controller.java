@@ -1,4 +1,4 @@
- package com.backend.code.Controller;
+package com.backend.code.Controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,141 +42,144 @@ public class Controller {
 
 	FriendsNetworkRepoistry repo;
 	UserDetails user;
- 
+
 	@GetMapping("/addprofile")
 	public String profile(@RequestBody profile userprofile) {
-		
+
 		repo.profile(userprofile);
 		return "success";
 	}
-	
+
 	@GetMapping("/user")
 	public ResponseEntity<?> findById(@RequestParam(value = "userid") int userid) throws ResourceNotFoundException {
-		List<userProfile> user =repo.findById(userid);
-		if(user.size()==0)
-		{
+		List<userProfile> user = repo.findById(userid);
+		if (user.size() == 0) {
 			throw new ResourceNotFoundException("user not found");
-		} 
+		}
 		return ResponseEntity.ok().body(user);
 	}
 
 	@PostMapping("/createUser")
 	public ResponseEntity<?> insertUsersDetails(@Valid @RequestBody UserDetails user) throws NoSuchAlgorithmException {
-		String result="successfully accepted";
-		try{
-		      repo.insertUsersDetails(user);
-		}
-		catch(DataIntegrityViolationException e)
-		{
-		     return ResponseEntity.ok().body("user is already registor"); 	
+		String result = "successfully accepted";
+		try {
+			repo.insertUsersDetails(user);
+		} catch (DataIntegrityViolationException e) {
+			return ResponseEntity.ok().body("user is already registor");
 		}
 		return ResponseEntity.ok().body(result);
 	}
 
 	@CrossOrigin(origins = "*")
 	@PostMapping("/upload")
-	public String uplaodImage(@RequestParam("imageFile") MultipartFile file) throws IOException {
+	public List<Integer> uplaodImage(@RequestParam("imageFile") MultipartFile file) throws IOException {
 		System.out.println("Original Image Byte Size - " + file.getBytes().length + " " + file.getOriginalFilename()
 				+ " " + file.getContentType());
 		ImageModel img = new ImageModel();
-				img.setName(file.getOriginalFilename());
-				img.setType(file.getContentType());
-				img.setPicByte(compressBytes(file.getBytes()));
-		repo.saveImage(img);
-		return "String";
+		img.setName(file.getOriginalFilename());
+		img.setType(file.getContentType());
+		img.setPicByte(compressBytes(file.getBytes()));
+		return repo.saveImage(img);
 	}
 
+	@CrossOrigin(origins = "*")
 	@GetMapping("/get/{imageName}")
-	public List<ImageModel> getImage(@PathVariable("imageName") int imageId) throws IOException, ResourceNotFoundException {
+	public List<ImageModel> getImage(@PathVariable("imageName") int imageId)
+			throws IOException, ResourceNotFoundException {
 		List<ImageModel> image = repo.findImageByName(imageId);
-		if(image==null)
-		{
+		if (image == null) {
 			throw new ResourceNotFoundException("Image is not found ");
 		}
+		byte[] uy = decompressBytes(image.get(0).getPicByte());
+		image.get(0).setPicByte(uy);
 		return image;
 	}
-
-	@PostMapping("/Addpost")
-	public ResponseEntity<String> addPost(@RequestBody post p) {
-		try {
-		  repo.addPost(p);
-		}
-		catch(NullPointerException e)
-		{
-            return ResponseEntity.ok().body("no values are supplied");  
-		}
-		return ResponseEntity.ok().body("post added");
 	
+	@CrossOrigin(origins = "*")
+	@PostMapping("/Addpost/{userid}")
+	public ResponseEntity<String> addPost(@RequestBody post p,@PathVariable("userid") int userId) {
+		
+			System.out.println("rwwgw");
+			repo.addPost(p,userId);
+	
+		return ResponseEntity.ok().body("post added");
 	}
-
+    @CrossOrigin(origins = "*")
 	@PostMapping("/addLike/{userid}")
-	public String addLike(@RequestBody addLike like ,@PathVariable("userid") int userId){
-		repo.addLike(like,userId);
+	public String addLike(@RequestBody addLike like, @PathVariable("userid") int userId) {
+		repo.addLike(like, userId);
 		return "like added";
 	}
+    @CrossOrigin(origins = "*")
 	@PostMapping("/removeLike/{userid}")
-	public String removeLike(@RequestBody addLike like,@PathVariable("userid") int userId)
-	{
-		repo.removeLike(like,userId);
+	public String removeLike(@RequestBody addLike like, @PathVariable("userid") int userId) {
+		repo.removeLike(like, userId);
 		return "like deleted";
 	}
+    @CrossOrigin(origins = "*")
 	@GetMapping("/showLike/{userid}")
-	public List<IdName> showLike(@RequestBody addLike like,@PathVariable("userid") int userId)
-	{
-		return repo.showLike(like,userId);
+	public List<IdName> showLike(@PathVariable("userid") int userId) {
+		System.out.println("gguhkhk");
+		return repo.showLike( userId);
 	}
+    @CrossOrigin(origins = "*")
 	@PostMapping("/addComment/{userid}")
-	public String addComment(@RequestBody addComment comment,@PathVariable("userid") int userId){
-		repo.addComment(comment,userId);
+	public String addComment(@RequestBody addComment comment, @PathVariable("userid") int userId) {
+		repo.addComment(comment, userId);
 		return "comment added";
 	}
+
 	@PostMapping("/removeComment/{userid}")
-	public String removeComment(@RequestBody addComment comment,@PathVariable("userid") int userId){
-		repo.removeComment(comment,userId);
+	public String removeComment(@RequestBody addComment comment, @PathVariable("userid") int userId) {
+		repo.removeComment(comment, userId);
 		return "comment deleted";
 	}
+
 	@GetMapping("/showComment/{userid}")
-	public List<displayComment> showComment(@RequestBody addComment comment,@PathVariable("userid") int userId)
-	{
-       return repo.showComment(comment,userId);
+	public List<displayComment> showComment(@RequestBody addComment comment, @PathVariable("userid") int userId) {
+		return repo.showComment(comment, userId);
 	}
+
 	@PostMapping("/addFriend/{userid}")
-	public String addFriend(@RequestBody com.backend.code.Objects.addFriend Af, @PathVariable("userid") int userId)
-	{
+	public String addFriend(@RequestBody com.backend.code.Objects.addFriend Af, @PathVariable("userid") int userId) {
 		System.out.println(Af.getUser1());
-		repo.addFriend(Af,userId);
+		repo.addFriend(Af, userId);
 		return "friend request sent";
-	}	
+	}
+
 	@PostMapping("/removeFriend/{userid}")
-	public ResponseEntity<?> removeFriend(@RequestBody com.backend.code.Objects.addFriend Af,@PathVariable("userid") int userId)
-	{
+	public ResponseEntity<?> removeFriend(@RequestBody com.backend.code.Objects.addFriend Af,
+			@PathVariable("userid") int userId) {
 		System.out.println("ddfhdjj");
-		try{
-		    repo.removeFriend(Af,userId);
-		}
-		catch(NullPointerException e)
-		{
-            return ResponseEntity.ok().body("no values are supplied");  
+		try {
+			repo.removeFriend(Af, userId);
+		} catch (NullPointerException e) {
+			return ResponseEntity.ok().body("no values are supplied");
 		}
 		return ResponseEntity.ok().body("friend Removed");
 	}
 
 	@GetMapping("/showFriends/{userid}")
-	public List<IdName> showFriends(@PathVariable("userid") int userId)
-	{
+	public List<IdName> showFriends(@PathVariable("userid") int userId) {
 		return repo.showFriends(userId);
 	}
+
 	@GetMapping("/showmembers")
-	public List<IdName> showMembers(@RequestParam (value="userid")int userid)
-	{
+	public List<IdName> showMembers(@RequestParam(value = "userid") int userid) {
 		return repo.showMembers(userid);
 	}
-	
-	@GetMapping("/showPost/{userid}")
-	public List<postResult> showPost(@PathVariable("userid") int userId)
-	{
-         return repo.showPost(userId);
+
+	@CrossOrigin(origins = "*")
+	@GetMapping("/showpost/{userid}")
+	public List<postResult> showPost(@PathVariable("userid") int userId) {
+		List<postResult> y=repo.showPost(userId);
+		for(int i=0;i<y.size();i++)
+		{
+			y.get(i).picByte=(decompressBytes(y.get(i).picByte));
+		}
+		return y;
 	}
+
 	public static byte[] compressBytes(byte[] data) {
 		Deflater deflater = new Deflater();
 		deflater.setInput(data);
@@ -196,7 +199,7 @@ public class Controller {
 		return outputStream.toByteArray();
 
 	}
-    
+
 	public static byte[] decompressBytes(byte[] data) {
 		Inflater inflater = new Inflater();
 		inflater.setInput(data);

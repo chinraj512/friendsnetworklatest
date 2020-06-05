@@ -66,7 +66,6 @@ public class UserAccountController {
     public String confirmUserAccount( @RequestParam("token")String confirmationToken)
     {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
-
         if(token != null)
         {
             User user = userRepository.findByEmailIgnoreCase(token.getUser().getEmail());

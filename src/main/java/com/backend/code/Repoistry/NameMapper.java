@@ -5,15 +5,15 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-public class NameMapper implements RowMapper<String> {
+public class NameMapper implements RowMapper<Integer> {
 
     @Override
-    public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
     	
      
-    	String username=rs.getString("username");
+    	int id=rs.getInt("picid");
         
-        return username;
+        return id;
     }
 
 }
