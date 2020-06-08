@@ -3,6 +3,7 @@ package com.backend.code.Controller;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.backend.code.Objects.ChatPage;
 import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.IdPattern;
 import com.backend.code.Entity.ImageModel;
@@ -31,7 +33,9 @@ import com.backend.code.Exception.GlobalExceptionHandler;
 import com.backend.code.Exception.ResourceNotFoundException;
 import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addLike;
+import com.backend.code.Objects.chatUsers;
 import com.backend.code.Objects.displayComment;
+import com.backend.code.Objects.loginFriends;
 import com.backend.code.Entity.post;
 import com.backend.code.Objects.postResult;
 import com.backend.code.Objects.userProfile;
@@ -39,6 +43,7 @@ import com.backend.code.Repoistry.FriendsNetworkRepoistry;
 
 @RestController
 public class Controller {
+	
 	@Autowired
 
 	FriendsNetworkRepoistry repo;
@@ -161,8 +166,8 @@ public class Controller {
 	}
 
 	@GetMapping("/showFriends/{userid}")
-	public List<IdName> showFriends(@PathVariable("userid") int userId) {
-		return repo.showFriends(userId);
+	public List<IdName> showFriends(@RequestBody loginFriends login) {
+		return repo.showFriends(login);
 	}
 
 	@GetMapping("/showmembers")
@@ -231,5 +236,17 @@ public class Controller {
 		String pattern=idpatttern.pattern;
 		int userid=idpatttern.userid;
 		return repo.FriendSearch(pattern,userid);		
+	}
+	@GetMapping("/insertmessages")
+	public String InsertMessage(@RequestBody chatUsers chatusers) throws SQLException
+	{
+		repo.insertmessages(chatusers);
+		return "successfully inserted";
+	}
+	@GetMapping("/getchatusers")
+	public List<ChatPage> getmessages(@RequestParam(value="realuser") int realuser)
+	{
+		System.out.println("jhgjhgj");
+		return repo.getChatDetails(realuser);
 	}
 }

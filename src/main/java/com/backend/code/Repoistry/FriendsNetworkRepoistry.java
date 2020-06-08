@@ -1,7 +1,11 @@
 package com.backend.code.Repoistry;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -9,6 +13,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -18,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.backend.code.Objects.ChatPage;
 import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.IdPattern;
 
@@ -26,6 +32,9 @@ import com.backend.code.Entity.UserDetails;
 import com.backend.code.Entity.profile;
 import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addFriend;
+import com.backend.code.Objects.chatUsers;
+import com.backend.code.Objects.loginFriends;
+import com.backend.code.Objects.messageobj;
 import com.backend.code.Entity.post;
 import com.backend.code.Objects.postResult;
 import com.backend.code.Objects.userProfile;
@@ -100,7 +109,7 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         return template.query(sql, param, new NameMapper());
     }
 
-    public List<ImageModel> findImageByName(int imageId) {
+ public List<ImageModel> findImageByName(int imageId) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("picId", imageId);
         return template.query("select * from  image_model where picid=:picId", param, new ImageMapper());
     }
@@ -187,9 +196,10 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         template.update(sql2, param, holder);
     }
 
-    public List<IdName> showFriends(int userId) {
-        final String sql = "select username from userdetails where userid in (select user1 as user from friendsrelation where user2=:userId union select user2 as user from friendsrelation where user1=:userId)";
-        SqlParameterSource param = new MapSqlParameterSource().addValue("userId", userId);
+    public List<IdName> showFriends(loginFriends friends) {
+        final String sql = "select username from userdetails where (userid in (select user1 as user from friendsrelation where user2=:userId union select user2 as user from friendsrelation where user1=:userId)) and(userid in (:users  );)";
+        SqlParameterSource param = new MapSqlParameterSource().addValue("userId", friends.userid)
+        		.addValue("users", friends.users);
         return template.query(sql, param, new IdNameMapper());
     }
 
@@ -238,7 +248,59 @@ public List<IdName> FriendSearch(String pattern,int userid){
 	return template.query(sql, param,new IdNameMapper());
 }
 
-
-
-
+public void insertmessages(chatUsers chatusers) throws SQLException{
+	int user1;
+    int user2;
+    int temp;
+    if (chatusers.user1 > chatusers.user2) {
+        user1 = chatusers.user2;
+        user2 = chatusers.user1;
+    } else {
+    	user1 = chatusers.user1;
+        user2 = chatusers.user2;
+    }
+	final String sql1="update  messagecount set messagecount = messagecount+1 where user1=:user1 and user2 =:user2 returning messagecount\r\n" ;  
+	SqlParameterSource param=new MapSqlParameterSource().addValue("user1",user1).addValue("user2", user2);
+	KeyHolder holder = new GeneratedKeyHolder();
+	int messagecount=template.update(sql1, param,holder);
+	if(messagecount==0){
+		final String sql2=	"INSERT INTO public.messagecount(\r\n" + 
+				"user1, user2, messagecount)\r\n" + 
+				"select :user1 ,:user2 , 1\r\n" + 
+				"where not exists(select 1 from messagecount where user1=:user1 and user2=:user2) returning messagecount;\r\n"; 
+		template.update(sql2,param,holder);		
+	}
+    DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+    Date dateobj = new Date();
+	List<Integer> messagenum=template.query("select messagecount from messagecount where user1=:user1 and user2=:user2", param,new messagemapper());
+	System.out.println(messagenum);
+	String sql3="Insert into message (user1,user2,messagenum,message,createdtime,sender) values(:user1,:user2,:messagenum,:message,:createdtime,:senderid);";
+	SqlParameterSource param1=new MapSqlParameterSource().addValue("user1", user1).addValue("user2", user2).addValue("message", chatusers.message).addValue("messagenum",messagenum.get(0)).addValue("senderid", chatusers.senderid).addValue("createdtime",dateobj);
+	template.update(sql3, param1,holder);
+}
+public List<messageobj> getmessages(int user1,int user2){
+	int temp;
+	 if (user1 > user2) {
+	     temp=user1;      
+		 user1 = user2;
+	     user2 = temp;
+	    } 
+	final String sql="select * from messages where user1=:user1 and user2=:user2";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("user1", user1).addValue("user2", user2);
+	return template.query(sql, param,new UserMessage());
+}
+public List<ChatPage> getChatDetails(int realuser)
+{
+	
+	final String sql="select ud.username,ud.userid,mc.messagecount,m.message,m.messagenum,m.sender,m.createdtime ,p.picid,im.name,im.picbyte,im.type\r\n" + 
+			"from userdetails ud \r\n" + 
+			"inner join message m on (ud.userid=m.user2 or ud.userid=m.user1) and ud.userid!=:realuser\r\n" + 
+			"inner join messagecount mc on (m.user1=mc.user1 and m.user2=mc.user2)\r\n" + 
+			"left join profile p on p.userid=ud.userid\r\n" + 
+			"right join image_model im on p.picid=im.picid\r\n" + 
+			"where mc.messagecount=m.messagenum and (mc.user1=m.user1 and mc.user2=m.user2);";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("realuser", realuser);
+	System.out.println(realuser);
+	return template.query(sql,param, new ChatPageMapper()); 
+}
 }
