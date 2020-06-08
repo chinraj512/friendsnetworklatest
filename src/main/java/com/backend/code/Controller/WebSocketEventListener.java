@@ -1,6 +1,10 @@
 package com.backend.code.Controller;
 
 import com.backend.code.Objects.ChatMessage;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +18,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Component
 public class WebSocketEventListener {
-
+	List<Integer> lis=new LinkedList<Integer>();
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
 
     @Autowired
@@ -48,6 +52,8 @@ public class WebSocketEventListener {
             chatMessage.setSender(privateUsername);
 
             messagingTemplate.convertAndSend("/queue/reply", chatMessage);
+            ChatController obj=new ChatController();
+            obj.loginUsers.remove(privateUsername);
         }
     }
 }
