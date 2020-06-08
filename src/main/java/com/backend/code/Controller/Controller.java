@@ -19,12 +19,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.code.Objects.ChatPage;
 import com.backend.code.Objects.IdName;
+import com.backend.code.Objects.IdNameStatus;
 import com.backend.code.Objects.IdPattern;
 import com.backend.code.Entity.ImageModel;
 import com.backend.code.Entity.UserDetails;
@@ -165,8 +168,10 @@ public class Controller {
 		return ResponseEntity.ok().body("friend Removed");
 	}
 
-	@GetMapping("/showFriends/{userid}")
-	public List<IdName> showFriends(@RequestBody loginFriends login) {
+	@GetMapping("/showFriends")
+	public List<IdNameStatus> showFriends(@RequestBody loginFriends login) {
+		System.out.println(login.userid);
+		System.out.println(login.users);
 		return repo.showFriends(login);
 	}
 

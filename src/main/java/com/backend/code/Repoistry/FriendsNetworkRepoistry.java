@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.backend.code.Objects.ChatPage;
 import com.backend.code.Objects.IdName;
+import com.backend.code.Objects.IdNameStatus;
 import com.backend.code.Objects.IdPattern;
 
 import com.backend.code.Entity.ImageModel;
@@ -196,11 +197,18 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         template.update(sql2, param, holder);
     }
 
-    public List<IdName> showFriends(loginFriends friends) {
-        final String sql = "select username from userdetails where (userid in (select user1 as user from friendsrelation where user2=:userId union select user2 as user from friendsrelation where user1=:userId)) and(userid in (:users  );)";
+    public List<IdNameStatus> showFriends(loginFriends friends) {
+        final String sql = "select userid,username,(case \r\n" + 
+        		"						when exists(select userid from userdetails where userid in(:users)) then true \r\n" + 
+        		"						when not exists (select userid from userdetails where userid  in(:users)) then false end)\r\n" + 
+        		"						as status \r\n" + 
+        		"from userdetails\r\n" + 
+        		"where (userid in (select user1 as user from friendsrelation where user2=:userId \r\n" + 
+        		"				  union\r\n" + 
+        		"				  select user2 as user from friendsrelation where user1=:userId))";
         SqlParameterSource param = new MapSqlParameterSource().addValue("userId", friends.userid)
         		.addValue("users", friends.users);
-        return template.query(sql, param, new IdNameMapper());
+        return template.query(sql, param, new IdNameStatusMapper());
     }
 
     public List<IdName> showMembers(int userid) {
