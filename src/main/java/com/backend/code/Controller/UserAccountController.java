@@ -1,6 +1,8 @@
 package com.backend.code.Controller;
 
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -49,11 +51,28 @@ public class UserAccountController {
     
     @Autowired
     private ResetPasswordTokenRepository reset;
+    public int getAge(Date dateOfBirth) {
+        int age = 0;
+        Calendar born = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
+        if(dateOfBirth!= null) {
+            now.setTime(new Date());
+            born.setTime(dateOfBirth);  
+            if(born.after(now)) {
+                throw new IllegalArgumentException("Can't be born in the future");
+            }
+            age = now.get(Calendar.YEAR) - born.get(Calendar.YEAR);             
+            if(now.get(Calendar.DAY_OF_YEAR) < born.get(Calendar.DAY_OF_YEAR))  {
+                age-=1;
+            }
+        }  
+        return age;
+    }
 
-    @PostMapping("/register")
+    @PostMapping("/register") 
     public String registerUser(@RequestBody User user)
     {
-    	System.out.println(user.getEmail());
+    	System.out.println(user.getDateofbirth());
         User existingUser = userRepository.findByEmailIgnoreCase(user.getEmail());
         if(existingUser != null)
         {
@@ -104,8 +123,10 @@ public class UserAccountController {
             	realUser.setEmail(user.getEmail());
             	realUser.setGender(user.getGender());
             	realUser.setPhonenumber(user.getPhonenumber());
-            	realUser.setAge(user.getAge());
             	realUser.setDateofbirth(user.getDateofbirth());
+            	Date date=new Date();
+            	int ages=getAge(user.getDateofbirth());
+            	realUser.setAge(ages);
             	friend.insertUsersDetails(realUser);
 
             	return "Successfully registered";

@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,14 +28,13 @@ import com.backend.code.Objects.ChatPage;
 import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.IdNameStatus;
 import com.backend.code.Objects.IdPattern;
-
+import com.backend.code.Controller.ChatController;
 import com.backend.code.Entity.ImageModel;
 import com.backend.code.Entity.UserDetails;
 import com.backend.code.Entity.profile;
 import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addFriend;
 import com.backend.code.Objects.chatUsers;
-import com.backend.code.Objects.loginFriends;
 import com.backend.code.Objects.messageobj;
 import com.backend.code.Entity.post;
 import com.backend.code.Objects.postResult;
@@ -197,17 +197,21 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         template.update(sql2, param, holder);
     }
 
-    public List<IdNameStatus> showFriends(loginFriends friends) {
-        final String sql = "select userid,username,(case \r\n" + 
+    public List<IdNameStatus> showFriends(int userid) {
+    	ChatController obj=new ChatController();
+    	obj.loginUsers.add(0);
+        final String sql = "select userid,username,im.picbyte,im.picid,(case \r\n" + 
         		"						when exists(select userid from userdetails where userid in(:users)) then true \r\n" + 
         		"						when not exists (select userid from userdetails where userid  in(:users)) then false end)\r\n" + 
-        		"						as status \r\n" + 
-        		"from userdetails\r\n" + 
+        		"						as status, \r\n" + 
+        		"from userdetails\r\n" +
+        		"left join profile p on ud.userid=p.userid"+
+        		"join image_model im on p.picid=im.picid"+
         		"where (userid in (select user1 as user from friendsrelation where user2=:userId \r\n" + 
         		"				  union\r\n" + 
         		"				  select user2 as user from friendsrelation where user1=:userId))";
-        SqlParameterSource param = new MapSqlParameterSource().addValue("userId", friends.userid)
-        		.addValue("users", friends.users);
+        SqlParameterSource param = new MapSqlParameterSource().addValue("userId", userid)
+        		.addValue("users", obj.loginUsers);
         return template.query(sql, param, new IdNameStatusMapper());
     }
 
@@ -310,5 +314,21 @@ public List<ChatPage> getChatDetails(int realuser)
 	SqlParameterSource param=new MapSqlParameterSource().addValue("realuser", realuser);
 	System.out.println(realuser);
 	return template.query(sql,param, new ChatPageMapper()); 
+}
+public List<IdName> getBirthdayPeoples(int userid)
+{
+	final String sql="SELECT userid,username FROM userdetails WHERE DATE_PART('day', dateofbirth) = date_part('day', CURRENT_DATE) AND DATE_PART('month', dateofbirth) = date_part('month', CURRENT_DATE) and (userid!=:userid and userid in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) ";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("userid", userid);
+	List<IdName> lis= template.query(sql,param,new  IdNameMapper());
+	return lis;
+}
+
+
+@Scheduled(cron = "0 0 12 * * ?")
+public void updateAge()
+{
+	final String sql="update userdetails set age = age + 1 WHERE DATE_PART('day', dateofbirth) = date_part('day', CURRENT_DATE) AND DATE_PART('month', dateofbirth) = date_part('month', CURRENT_DATE) ";
+	KeyHolder holder = new GeneratedKeyHolder();
+	template.update(sql, null, holder);
 }
 }
