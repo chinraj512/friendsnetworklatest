@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
-				.authorizeRequests().antMatchers("/authenticate","/createUser","/register","/confirm-account","/showpost/{userid}","/upload","/get/{imageName}","/removeLike/{userid}","/addLike/{userid}","/addComment/{userid}","/Addpost/{userid}","/showLike/{userid}","/sendMessage","/addUser","/sendPrivateMessage","/addPrivateUser","/ws/**","/loginUsers/**","/getchatusers/**","/showFriends/**").permitAll().
+				.authorizeRequests().antMatchers("/authenticate","/createUser","/register","/confirm-account","/showpost/{userid}","/upload","/get/{imageName}","/removeLike/{userid}","/addLike/{userid}","/addComment/{userid}","/Addpost/{userid}","/showLike/{userid}","/sendMessage","/addUser","/sendPrivateMessage","/addPrivateUser","/ws/**","/loginUsers/**","/getchatusers/**","/showFriends/**","/getbirthdaypeoples").permitAll().
 				anyRequest().authenticated().and().
 				exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);

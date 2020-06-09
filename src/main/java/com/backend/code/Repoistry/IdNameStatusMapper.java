@@ -16,6 +16,8 @@ public class IdNameStatusMapper implements RowMapper<IdNameStatus>{
 	    	id.userid=rs.getInt("userid");
 	    	id.username=rs.getString("username");
 	        id.status=rs.getBoolean("status");
+	        id.picid=rs.getInt("picid");
+	        id.picbyte=rs.getBytes("picbyte");
 	        return id;
 	    }
 

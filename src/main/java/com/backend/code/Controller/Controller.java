@@ -38,7 +38,6 @@ import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addLike;
 import com.backend.code.Objects.chatUsers;
 import com.backend.code.Objects.displayComment;
-import com.backend.code.Objects.loginFriends;
 import com.backend.code.Entity.post;
 import com.backend.code.Objects.postResult;
 import com.backend.code.Objects.userProfile;
@@ -169,10 +168,9 @@ public class Controller {
 	}
 
 	@GetMapping("/showFriends")
-	public List<IdNameStatus> showFriends(@RequestBody loginFriends login) {
-		System.out.println(login.userid);
-		System.out.println(login.users);
-		return repo.showFriends(login);
+	public List<IdNameStatus> showFriends(@RequestParam(value="userid") int userid) {
+
+		return repo.showFriends(userid);
 	}
 
 	@GetMapping("/showmembers")
@@ -242,7 +240,7 @@ public class Controller {
 		int userid=idpatttern.userid;
 		return repo.FriendSearch(pattern,userid);		
 	}
-	@GetMapping("/insertmessages")
+	@PostMapping("/insertmessages")
 	public String InsertMessage(@RequestBody chatUsers chatusers) throws SQLException
 	{
 		repo.insertmessages(chatusers);
@@ -253,5 +251,10 @@ public class Controller {
 	{
 		System.out.println("jhgjhgj");
 		return repo.getChatDetails(realuser);
+	}
+	@GetMapping("/getbirthdaypeoples")
+	public List<IdName> getBirthdayPeoples(@RequestParam(value="userid") int userid)
+	{
+		return repo.getBirthdayPeoples(userid);
 	}
 }
