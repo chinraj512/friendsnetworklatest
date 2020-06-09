@@ -53,7 +53,8 @@ public class WebSocketEventListener {
 
             messagingTemplate.convertAndSend("/queue/reply", chatMessage);
             ChatController obj=new ChatController();
-            obj.loginUsers.remove(privateUsername);
+            int userid=Integer.parseInt(privateUsername);
+            obj.loginUsers.remove(userid);
         }
     }
 }

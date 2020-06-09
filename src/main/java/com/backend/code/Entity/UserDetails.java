@@ -29,10 +29,18 @@ public class UserDetails {
 	@Column(name="password",nullable=false)
 	private String password;
 	@Column(name="age",nullable=false)
-	private String age;
+	private int age;
 	@Column(name="dateofbirth",nullable=false)
 	private Date dateofbirth;
 	
+	public Date getDateofbirth() {
+		return dateofbirth;
+	}
+
+	public void setDateofbirth(Date dateofbirth) {
+		this.dateofbirth = dateofbirth;
+	}
+
 	public int getUserid() {
 		return userid;
 	}
@@ -85,23 +93,19 @@ public class UserDetails {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	public String getAge() {
+
+	public int getAge() {
 		return age;
 	}
-	
 
-	public void setAge(String age) {
+	public void setAge(int age) {
 		this.age = age;
 	}
+	
 
-	public Date getDateofbirth() {
-		return dateofbirth;
-	}
 
-	public void setDateofbirth(Date dateofbirth) {
-		this.dateofbirth = dateofbirth;
-	}
+
+
 	
 
 }

@@ -27,22 +27,20 @@ public class User {
 	private String phonenumber;
 	@Column(name="password",nullable=false)
 	private String password;
-	@Column(name="age",nullable=false)
-	private String age;
 	@Column(name="dateofbirth" ,nullable=false)
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="dd-mm-yyyy")
 	private Date dateofbirth;
-	@Column(name="isEnabled")
-    private boolean isEnabled;
-	
-
-	
 	public Date getDateofbirth() {
 		return dateofbirth;
 	}
 	public void setDateofbirth(Date dateofbirth) {
 		this.dateofbirth = dateofbirth;
 	}
+	@Column(name="isEnabled")
+    private boolean isEnabled;
+	
+
+	
 	public long getUserid() {
 		return userid;
 	}
@@ -79,12 +77,7 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getAge() {
-		return age;
-	}
-	public void setAge(String age) {
-		this.age = age;
-	}
+	
 	public boolean isEnabled() {
 		return isEnabled;
 	}
