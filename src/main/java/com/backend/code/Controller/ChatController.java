@@ -2,7 +2,10 @@ package com.backend.code.Controller;
 
 import com.backend.code.Objects.ChatMessage;
 import com.backend.code.Objects.chatUsers;
+import com.backend.code.Objects.ChatMessage.MessageType;
+import com.backend.code.Repoistry.FriendsNetworkRepoistry;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,29 +22,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ChatController {
-	public List <String> loginUsers=new ArrayList<String>(); 
+	public List<String> loginUsers = new ArrayList<String>();
 	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;	
+	FriendsNetworkRepoistry repo;
+	@Autowired
+	private SimpMessagingTemplate simpMessagingTemplate;
+
 	@MessageMapping("/sendMessage")
 	@SendTo("/topic/pubic")
-	public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
+	public ChatMessage sendMessage(@Payload final ChatMessage chatMessage) {
 		return chatMessage;
 	}
 
 	@MessageMapping("/sendPrivateMessage")
-	public void sendPrivateMessage(@Payload ChatMessage chatMessage) {
-		System.out.println(chatMessage.getReceiver());
+	public void sendPrivateMessage(@Payload final ChatMessage chatMessage) throws SQLException {
+			repo.insertmessages(chatMessage);
 		simpMessagingTemplate.convertAndSendToUser(
-				chatMessage.getReceiver().trim(), "/queue", chatMessage); 
+			String.valueOf(chatMessage.getReceiver()), "/queue", chatMessage);
+		simpMessagingTemplate.convertAndSendToUser(
+			String.valueOf(chatMessage.getSender()), "/queue", chatMessage); 
 	}
-    
+
 	@MessageMapping("/addUser")
 	@SendTo("/topic/pubic")
-	public ChatMessage addUser(@Payload ChatMessage chatMessage,
-			SimpMessageHeaderAccessor headerAccessor) {
+	public ChatMessage addUser(@Payload final ChatMessage chatMessage, final SimpMessageHeaderAccessor headerAccessor) {
 		// Add user in web socket session
 		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-		loginUsers.add("username");
+		loginUsers.add(String.valueOf(chatMessage.getSender()));
 		return chatMessage;
 	}
 	

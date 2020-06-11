@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 public class ChatMessage {
     private MessageType type;
     private String content;
-    private String sender;
-    private String receiver;
+    private int sender;
+    private int receiver;
 	private LocalDateTime dateTime=LocalDateTime.now();; 
     
     public enum MessageType {
@@ -33,19 +33,19 @@ public class ChatMessage {
         this.content = content;
     }
 
-    public String getSender() {
+    public int getSender() {
         return sender;
     }
 
-    public void setSender(String sender) {
+    public void setSender(int sender) {
         this.sender = sender;
     }
     
-    public String getReceiver() {
+    public int getReceiver() {
 		return receiver;
 	}
 
-	public void setReceiver(String receiver) {
+	public void setReceiver(int receiver) {
 		this.receiver = receiver;
 	}
     

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -167,8 +168,8 @@ public class Controller {
 		}
 		return ResponseEntity.ok().body("friend Removed");
 	}
-
-	@GetMapping("/showFriends")
+    @CrossOrigin(origins = "*")
+	@PostMapping("/showFriends")
 	public List<IdNameStatus> showFriends(@RequestBody loginFriends login) {
 		System.out.println(login.userid);
 		System.out.println(login.users);
@@ -242,16 +243,18 @@ public class Controller {
 		int userid=idpatttern.userid;
 		return repo.FriendSearch(pattern,userid);		
 	}
-	@GetMapping("/insertmessages")
-	public String InsertMessage(@RequestBody chatUsers chatusers) throws SQLException
+	@CrossOrigin(origins = "*")
+	@GetMapping("/getchatusers/{userid}")
+	public List<ChatPage> getmessages(@PathVariable("userid") int userId)
 	{
-		repo.insertmessages(chatusers);
-		return "successfully inserted";
+		List<ChatPage> r= repo.getChatDetails(userId);
+		Collections.reverse(r); 
+		return r;
 	}
-	@GetMapping("/getchatusers")
-	public List<ChatPage> getmessages(@RequestParam(value="realuser") int realuser)
+	@CrossOrigin(origins = "*")
+	@GetMapping("/getchatuser/{userid}")
+	public List<chatUsers> getmessagefromindivi(@PathVariable("userid") int userId,@RequestParam(value = "friendid") int friendId)
 	{
-		System.out.println("jhgjhgj");
-		return repo.getChatDetails(realuser);
+		return repo.getIndividualChat(userId,friendId);
 	}
 }
