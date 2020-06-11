@@ -22,6 +22,7 @@ public class ChatPageMapper implements RowMapper<ChatPage>{
 		obj.picbyte=rs.getBytes("picbyte");
 		obj.name=rs.getString("name");
 		obj.type=rs.getString("type");
+		obj.createdtime=rs.getString("createdtime");
 		return obj;
 	}
 

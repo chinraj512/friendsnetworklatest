@@ -39,22 +39,9 @@ public class WebSocketEventListener {
             logger.info("User Disconnected : " + username);
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setType(ChatMessage.MessageType.LEAVE);
-            chatMessage.setSender(username);
+            chatMessage.setSender(Integer.parseInt("username"));
 
             messagingTemplate.convertAndSend("/topic/pubic", chatMessage);
-        }
-        
-        if(privateUsername != null) {
-            logger.info("User Disconnected : " + privateUsername);
-
-            ChatMessage chatMessage = new ChatMessage();
-            chatMessage.setType(ChatMessage.MessageType.LEAVE);
-            chatMessage.setSender(privateUsername);
-
-            messagingTemplate.convertAndSend("/queue/reply", chatMessage);
-            ChatController obj=new ChatController();
-            int userid=Integer.parseInt(privateUsername);
-            obj.loginUsers.remove(userid);
         }
     }
 }
