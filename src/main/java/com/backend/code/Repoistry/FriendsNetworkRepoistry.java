@@ -35,9 +35,11 @@ import com.backend.code.Entity.profile;
 import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addFriend;
 import com.backend.code.Objects.chatUsers;
+import com.backend.code.Objects.longProfile;
 import com.backend.code.Objects.messageobj;
 import com.backend.code.Entity.post;
 import com.backend.code.Objects.postResult;
+import com.backend.code.Objects.shortProfile;
 import com.backend.code.Objects.userProfile;
 import com.backend.code.Objects.userpass;
 
@@ -115,21 +117,18 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         return template.query("select * from  image_model where picid=:picId", param, new ImageMapper());
     }
 
-    public void addPost(post p, int userId) {
-        Date today = new Date();
-        DateFormat df = new SimpleDateFormat("dd-MM-yy HH:mm:SS");
-        df.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
-        String IST = df.format(today);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        System.out.println("Date in Indian Timezone (IST) : " + IST);
-        final String sql = "insert into post(userid,status,location,likecount,commentcount,date,picid) values(:userId,:status,:location,:likeCount,:commentCount,:date,:picId)";
-        KeyHolder holder = new GeneratedKeyHolder();
-        SqlParameterSource param = new MapSqlParameterSource().addValue("userId", userId)
-            .addValue("picId",p.getPostId()).addValue("status", p.getStatus())
-                .addValue("location", p.getLocation()).addValue("likeCount", p.getLikeCount())
-                .addValue("commentCount", p.getCommentCount()).addValue("date", timestamp);
-        template.update(sql, param, holder);
-    }
+ public void addPost(post p, int userId) {
+	  DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm aa");
+	  Date present = new Date();
+	  String timestamp=df.format(present);
+	  final String sql = "insert into post(userid,status,location,likecount,commentcount,date,picid) values(:userId,:status,:location,:likeCount,:commentCount,:date,:picId)";
+	  KeyHolder holder = new GeneratedKeyHolder();
+	  SqlParameterSource param = new MapSqlParameterSource().addValue("userId", userId)
+	   .addValue("picId", p.getPostId()).addValue("status", p.getStatus())
+	   .addValue("location", p.getLocation()).addValue("likeCount", p.getLikeCount())
+	   .addValue("commentCount", p.getCommentCount()).addValue("date", timestamp);
+	  template.update(sql, param, holder);
+	 }
 
     public void addLike(com.backend.code.Objects.addLike like, int userId) {
         final String sql1 = "insert into likec(postid,userid) values(:postId,:userId)";
@@ -203,10 +202,10 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         final String sql = "select userid,username,im.picbyte,im.picid,(case \r\n" + 
         		"						when exists(select userid from userdetails where userid in(:users)) then true \r\n" + 
         		"						when not exists (select userid from userdetails where userid  in(:users)) then false end)\r\n" + 
-        		"						as status, \r\n" + 
+        		"						as status \r\n" + 
         		"from userdetails\r\n" +
         		"left join profile p on ud.userid=p.userid"+
-        		"join image_model im on p.picid=im.picid"+
+        		"left join image_model im on p.picid=im.picid"+
         		"where (userid in (select user1 as user from friendsrelation where user2=:userId \r\n" + 
         		"				  union\r\n" + 
         		"				  select user2 as user from friendsrelation where user1=:userId))";
@@ -282,8 +281,9 @@ public void insertmessages(chatUsers chatusers) throws SQLException{
 				"where not exists(select 1 from messagecount where user1=:user1 and user2=:user2) returning messagecount;\r\n"; 
 		template.update(sql2,param,holder);		
 	}
-    DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-    Date dateobj = new Date();
+    DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm aa");
+    Date dateobj1 = new Date();
+    String dateobj=df.format(dateobj1);
 	List<Integer> messagenum=template.query("select messagecount from messagecount where user1=:user1 and user2=:user2", param,new messagemapper());
 	System.out.println(messagenum);
 	String sql3="Insert into message (user1,user2,messagenum,message,createdtime,sender) values(:user1,:user2,:messagenum,:message,:createdtime,:senderid);";
@@ -330,5 +330,33 @@ public void updateAge()
 	final String sql="update userdetails set age = age + 1 WHERE DATE_PART('day', dateofbirth) = date_part('day', CURRENT_DATE) AND DATE_PART('month', dateofbirth) = date_part('month', CURRENT_DATE) ";
 	KeyHolder holder = new GeneratedKeyHolder();
 	template.update(sql, null, holder);
+} 
+
+public List<shortProfile> getShortProfile(int userid)
+{
+	final String sql="select p.work,p.college,p.degree,p.school,p.locality,(select count(*) from friendsrelation where (user1=:userid or user2=:userid) and activity=1) as friends from profile p where userid=:userid;";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("userid", userid);
+	return template.query(sql, param,new shortProfileMapper());
+	
+}
+
+public longProfile getLongProfile(int userid)
+{
+	final String sql1="select p.postid ,u.userid, p.status,p.location,p.commentcount,p.likecount,p.date,u.username,i.name,i.type,i.picbyte,(case when exists(select userid,postid from likec where userid=:userid and postid=p.postid) then true when not exists (select userid,postid from likec where userid=:userid and postid=p.postid) then false end) as liked from post p join userdetails u on p.userid=u.userid join image_model i on p.picid=i.picid where p.userid=:userid";
+	SqlParameterSource param=new MapSqlParameterSource().addValue("userid", userid);
+	List<postResult> posts=template.query(sql1, param,new postMapper());
+	ChatController obj=new ChatController();
+	obj.loginUsers.add(0);
+	final String sql2= "select ud.userid,ud.username,im.picbyte,im.picid,(case when exists(select userid from userdetails where userid in(:users)) then true when not exists (select userid from userdetails where userid  in(:users)) then false end) as status  from userdetails ud left join profile p on ud.userid=p.userid  left join image_model im on p.picid=im.picid  where (ud.userid in (select user1 as user from friendsrelation where user2=:userid union  select user2 as user from friendsrelation where user1=:userid)) ";
+	SqlParameterSource param1 = new MapSqlParameterSource().addValue("userid", userid)
+    		.addValue("users", obj.loginUsers);
+	List <IdNameStatus> friends=template.query(sql2,param1,new IdNameStatusMapper());
+	final String sql3="select p.work,p.college,p.degree,p.school,p.locality,(select count(*) from friendsrelation where (user1=:userid or user2=:userid) and activity=1) as friends from profile p where userid=:userid;";
+	List<shortProfile> res=template.query(sql3, param,new shortProfileMapper());
+	longProfile lp=new longProfile();
+	lp.friends=friends;
+	lp.posts=posts;
+	lp.sp=res;
+	return lp;
 }
 }
