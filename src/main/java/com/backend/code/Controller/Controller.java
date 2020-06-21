@@ -240,7 +240,7 @@ public class Controller {
 	}
 
 	@PostMapping("/searchformembers")
-	public List<IdName> MemberSearch(@RequestBody IdPattern idpatttern)
+	public List<IdNameStatus2> MemberSearch(@RequestBody IdPattern idpatttern)
 	{
 		String pattern=idpatttern.pattern;
 		int userid=idpatttern.userid;
