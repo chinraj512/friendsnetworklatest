@@ -203,10 +203,10 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         final String sql = "select userid,username,im.picbyte,im.picid,(case \r\n" + 
         		"						when exists(select userid from userdetails where userid in(:users)) then true \r\n" + 
         		"						when not exists (select userid from userdetails where userid  in(:users)) then false end)\r\n" + 
-        		"						as status, \r\n" + 
+        		"						as status \r\n" + 
         		"from userdetails\r\n" +
         		"left join profile p on ud.userid=p.userid"+
-        		"join image_model im on p.picid=im.picid"+
+        		"left join image_model im on p.picid=im.picid"+
         		"where (userid in (select user1 as user from friendsrelation where user2=:userId \r\n" + 
         		"				  union\r\n" + 
         		"				  select user2 as user from friendsrelation where user1=:userId))";

@@ -25,7 +25,7 @@ public class post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id 
     @Column(name = "postid")
-    private int postId;
+    public int postId;
     @JoinColumn(name = "userid")
     @ManyToOne(cascade = CascadeType.ALL)
     private UserDetails userDetails;
@@ -40,8 +40,8 @@ public class post {
     private int likeCount;
     @Column(name = "commentcount")
     private int commentCount;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    @Column(name="date")
+    private String date;
     public ImageModel getImagemodel() {
 		return imagemodel;
 	}
@@ -50,11 +50,12 @@ public class post {
 		this.imagemodel = imagemodel;
 	}
 
-	public Date getDate() {
+	
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 
