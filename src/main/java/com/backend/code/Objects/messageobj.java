@@ -7,6 +7,7 @@ public class messageobj {
 	public int user2;
 	public int messagenum;
 	public String message;
-	public Date createdtime;
+	public String messageDate;
+	public String messageTime;
 	public int senderid;
 }

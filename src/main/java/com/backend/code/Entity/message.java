@@ -20,7 +20,8 @@ public class message {
 	private int sender;
 	
 	@Column(name="createdtime")
-	private Date createdtime;
+	private String createdtime;
+
 
 	public primarykeys getKey() {
 		return key;
@@ -46,11 +47,13 @@ public class message {
 		this.sender = sender;
 	}
 
-	public Date getCreatedtime() {
+	public String getCreatedtime() {
 		return createdtime;
 	}
 
-	public void setCreatedtime(Date createdtime) {
+	public void setCreatedtime(String createdtime) {
 		this.createdtime = createdtime;
 	}
+
+	
 }

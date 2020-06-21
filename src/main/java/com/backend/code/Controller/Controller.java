@@ -40,8 +40,10 @@ import com.backend.code.Objects.addComment;
 import com.backend.code.Objects.addLike;
 import com.backend.code.Objects.chatUsers;
 import com.backend.code.Objects.displayComment;
+import com.backend.code.Objects.longProfile;
 import com.backend.code.Entity.post;
 import com.backend.code.Objects.postResult;
+import com.backend.code.Objects.shortProfile;
 import com.backend.code.Objects.userProfile;
 import com.backend.code.Repoistry.FriendsNetworkRepoistry;
 
@@ -190,11 +192,13 @@ public class Controller {
 	@CrossOrigin(origins = "*")
 	@GetMapping("/showpost/{userid}")
 	public List<postResult> showPost(@PathVariable("userid") int userId) {
+		System.out.println("inside");
 		List<postResult> y=repo.showPost(userId);
 		for(int i=0;i<y.size();i++)
 		{
 			y.get(i).picByte=(decompressBytes(y.get(i).picByte));
 		}
+
 		return y;
 	}
 
@@ -267,5 +271,15 @@ public class Controller {
 	public List<IdName> getBirthdayPeoples(@RequestParam(value="userid") int userid)
 	{
 		return repo.getBirthdayPeoples(userid);
+	}
+	@GetMapping("/getshortprofile")
+	public List<shortProfile> getShortProfile(@RequestParam (value="userid") int userid){
+		System.out.println("sdfrf");
+		return repo.getShortProfile(userid);
+	}
+	
+	@GetMapping("/getlongprofile")
+	public longProfile getLongProfile(@RequestParam(value="userid") int userid){
+		return repo.getLongProfile(userid);
 	}
 }
