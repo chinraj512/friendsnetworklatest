@@ -22,8 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ChatController {
-	public static ArrayList <Integer> loginUsers=new ArrayList<Integer>(); 
-	int a=1;
+	public static ArrayList <Integer> loginUsers=new ArrayList<Integer>();
 
 	@Autowired
 	FriendsNetworkRepoistry repo;
@@ -49,12 +48,8 @@ public class ChatController {
 	@SendTo("/topic/pubic")
 	public ChatMessage addUser(@Payload ChatMessage chatMessage,
 			SimpMessageHeaderAccessor headerAccessor) {
-		loginUsers.add(a);
-		loginUsers.add(2);
-		// Add user in web socket session
 		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-		int userid=Integer.parseInt("username");
-		loginUsers.add(userid);
+		loginUsers.add(chatMessage.getSender());
 		return chatMessage;
 	}
 

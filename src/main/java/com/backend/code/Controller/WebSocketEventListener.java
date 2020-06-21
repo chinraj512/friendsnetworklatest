@@ -18,7 +18,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Component
 public class WebSocketEventListener {
-	List<Integer> lis=new LinkedList<Integer>();
+    ChatController obj=new ChatController();
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
 
     @Autowired
@@ -33,14 +33,13 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
-        String privateUsername = (String) headerAccessor.getSessionAttributes().get("private-username");
-        if(username != null) {
+        int username = (int) headerAccessor.getSessionAttributes().get("username");
+        if(username !=0 || username==0) {
             logger.info("User Disconnected : " + username);
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setType(ChatMessage.MessageType.LEAVE);
-            chatMessage.setSender(Integer.parseInt("username"));
-
+            obj.loginUsers.remove(new Integer(username));
+            chatMessage.setSender(username);
             messagingTemplate.convertAndSend("/topic/pubic", chatMessage);
         }
     }
