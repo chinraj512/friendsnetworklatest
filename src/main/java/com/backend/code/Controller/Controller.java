@@ -183,11 +183,9 @@ public class Controller {
 	@CrossOrigin(origins = "*")
 	@GetMapping("/showpost/{userid}")
 	public List<postResult> showPost(@PathVariable("userid") int userId) {
+		System.out.println("inside");
 		List<postResult> y=repo.showPost(userId);
-		for(int i=0;i<y.size();i++)
-		{
-			y.get(i).picByte=(decompressBytes(y.get(i).picByte));
-		}
+
 		return y;
 	}
 
