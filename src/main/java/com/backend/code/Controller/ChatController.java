@@ -38,6 +38,9 @@ public class ChatController {
 	@MessageMapping("/sendPrivateMessage")
 	public void sendPrivateMessage(@Payload final ChatMessage chatMessage) throws SQLException {
 			repo.insertmessages(chatMessage);
+			String datetime=chatMessage.getMessageDate();
+			chatMessage.setMessageTime(datetime.substring(11));
+			chatMessage.setMessageDate("Today");
 		simpMessagingTemplate.convertAndSendToUser(
 			String.valueOf(chatMessage.getReceiver()), "/queue", chatMessage);
 		simpMessagingTemplate.convertAndSendToUser(

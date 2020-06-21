@@ -6,5 +6,6 @@ public class chatUsers {
 	public String message;
 	public int senderid;
 	public int receiverid;
-	public String time;
+	public String messageDate;
+	public String messageTime;
 }

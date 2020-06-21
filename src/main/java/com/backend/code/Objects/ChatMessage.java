@@ -1,6 +1,9 @@
 package com.backend.code.Objects;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 
 public class ChatMessage {
@@ -8,9 +11,26 @@ public class ChatMessage {
     private String content;
     private int sender;
     private int receiver;
-	private LocalDateTime dateTime=LocalDateTime.now();; 
-    
-    public enum MessageType {
+	Date present = new Date();
+	private String messageDate=new SimpleDateFormat("dd/MM/yyyy HH:mm aa").format(present);
+    private String messageTime;
+    public String getMessageDate() {
+		return messageDate;
+	}
+
+	public void setMessageDate(String messageDate) {
+		this.messageDate = messageDate;
+	}
+
+	public String getMessageTime() {
+		return messageTime;
+	}
+
+	public void setMessageTime(String messageTime) {
+		this.messageTime = messageTime;
+	}
+
+	public enum MessageType {
         CHAT,
         JOIN,
         LEAVE,
@@ -48,13 +68,6 @@ public class ChatMessage {
 	public void setReceiver(int receiver) {
 		this.receiver = receiver;
 	}
-    
-    public LocalDateTime getDateTime() {
-		return dateTime;
-	}
 
-	public void setDateTime(LocalDateTime dateTime) {
-		this.dateTime = dateTime;
-	}
 
 }

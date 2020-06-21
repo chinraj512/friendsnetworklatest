@@ -8,7 +8,8 @@ public class ChatPage {
 	public String message;
 	public int messagenum;
 	public int sender;
-	public String createdtime;
+	public String messageDate;
+	public String messageTime;
 	public String username;
 	public int picid;
 	public String type;

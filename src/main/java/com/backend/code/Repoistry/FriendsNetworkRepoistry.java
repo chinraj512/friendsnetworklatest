@@ -296,12 +296,9 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
 				"where not exists(select 1 from messagecount where user1=:user1 and user2=:user2) returning messagecount;\r\n"; 
 		template.update(sql2,param,holder);		
 	}
-    DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm aa");
-    Date dateobj1 = new Date();
-    String dateobj=df.format(dateobj1);
 	List<Integer> messagenum=template.query("select messagecount from messagecount where user1=:user1 and user2=:user2", param,new messagemapper());
 	String sql3="Insert into message (user1,user2,messagenum,message,createdtime,sender) values(:user1,:user2,:messagenum,:message,:createdtime,:senderid);";
-	SqlParameterSource param1=new MapSqlParameterSource().addValue("user1", user1).addValue("user2", user2).addValue("message", chatusers.getContent()).addValue("messagenum",messagenum.get(0)).addValue("senderid", chatusers.getSender()).addValue("createdtime",dateobj);
+	SqlParameterSource param1=new MapSqlParameterSource().addValue("user1", user1).addValue("user2", user2).addValue("message", chatusers.getContent()).addValue("messagenum",messagenum.get(0)).addValue("senderid", chatusers.getSender()).addValue("createdtime",chatusers.getMessageDate());
 	template.update(sql3, param1,holder);
 }
 public List<messageobj> getmessages(int user1,int user2){
