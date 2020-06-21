@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.backend.code.Objects.ChatPage;
 import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.IdNameStatus;
+import com.backend.code.Objects.IdNameStatus2;
 import com.backend.code.Objects.IdPattern;
 import com.backend.code.Entity.ImageModel;
 import com.backend.code.Entity.UserDetails;
@@ -149,7 +151,7 @@ public class Controller {
 	public List<displayComment> showComment(@RequestBody addComment comment, @PathVariable("userid") int userId) {
 		return repo.showComment(comment, userId);
 	}
-
+    @CrossOrigin(origins = "*")
 	@PostMapping("/addFriend/{userid}")
 	public String addFriend(@RequestBody com.backend.code.Objects.addFriend Af, @PathVariable("userid") int userId) {
 		System.out.println(Af.getUser1());
@@ -157,10 +159,18 @@ public class Controller {
 		return "friend request sent";
 	}
 
+	@CrossOrigin(origins = "*")
+	@PostMapping("/acceptFriend/{userid}")
+	public String acceptFriend(@RequestBody com.backend.code.Objects.addFriend Af,
+			@PathVariable("userid") int userId) {
+				repo.acceptFriend(Af,userId);
+                return "friend Request accepted";
+	}
+
+    @CrossOrigin(origins = "*")
 	@PostMapping("/removeFriend/{userid}")
 	public ResponseEntity<?> removeFriend(@RequestBody com.backend.code.Objects.addFriend Af,
 			@PathVariable("userid") int userId) {
-		System.out.println("ddfhdjj");
 		try {
 			repo.removeFriend(Af, userId);
 		} catch (NullPointerException e) {
@@ -168,15 +178,14 @@ public class Controller {
 		}
 		return ResponseEntity.ok().body("friend Removed");
 	}
-
-	@GetMapping("/showFriends")
-	public List<IdNameStatus> showFriends(@RequestParam(value="userid") int userid) {
-
+    @CrossOrigin(origins = "*")
+	@PostMapping("/showFriends/{userid}")
+	public List<IdNameStatus> showFriends(@PathVariable("userid") int userid) {
 		return repo.showFriends(userid);
 	}
-
-	@GetMapping("/showmembers")
-	public List<IdName> showMembers(@RequestParam(value = "userid") int userid) {
+    @CrossOrigin(origins = "*")
+	@GetMapping("/showmembers/{userid}")
+	public List<IdNameStatus2> showMembers(@PathVariable("userid") int userid) {
 		return repo.showMembers(userid);
 	}
 
@@ -244,17 +253,19 @@ public class Controller {
 		int userid=idpatttern.userid;
 		return repo.FriendSearch(pattern,userid);		
 	}
-	@PostMapping("/insertmessages")
-	public String InsertMessage(@RequestBody chatUsers chatusers) throws SQLException
+	@CrossOrigin(origins = "*")
+	@GetMapping("/getchatusers/{userid}")
+	public List<ChatPage> getmessages(@PathVariable("userid") int userId)
 	{
-		repo.insertmessages(chatusers);
-		return "successfully inserted";
+		List<ChatPage> r= repo.getChatDetails(userId);
+		Collections.reverse(r); 
+		return r;
 	}
-	@GetMapping("/getchatusers")
-	public List<ChatPage> getmessages(@RequestParam(value="realuser") int realuser)
+	@CrossOrigin(origins = "*")
+	@GetMapping("/getchatuser/{userid}")
+	public List<chatUsers> getmessagefromindivi(@PathVariable("userid") int userId,@RequestParam(value = "friendid") int friendId)
 	{
-		System.out.println("jhgjhgj");
-		return repo.getChatDetails(realuser);
+		return repo.getIndividualChat(userId,friendId);
 	}
 	@GetMapping("/getbirthdaypeoples")
 	public List<IdName> getBirthdayPeoples(@RequestParam(value="userid") int userid)

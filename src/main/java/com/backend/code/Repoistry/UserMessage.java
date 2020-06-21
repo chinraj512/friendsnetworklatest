@@ -1,5 +1,5 @@
 package com.backend.code.Repoistry;
-
+     
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -15,7 +15,6 @@ public class UserMessage implements RowMapper<messageobj> {
 
 	@Override
 	public messageobj mapRow(ResultSet rs, int rowNum) throws SQLException {
-		// TODO Auto-generated method stub
 		messageobj msg=new messageobj();
 		msg.user1=rs.getInt("user1");
 		msg. user2=rs.getInt("user2");

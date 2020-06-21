@@ -24,9 +24,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.backend.code.Objects.ChatMessage;
 import com.backend.code.Objects.ChatPage;
 import com.backend.code.Objects.IdName;
 import com.backend.code.Objects.IdNameStatus;
+import com.backend.code.Objects.IdNameStatus2;
 import com.backend.code.Objects.IdPattern;
 import com.backend.code.Controller.ChatController;
 import com.backend.code.Entity.ImageModel;
@@ -51,23 +53,24 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
     public FriendsNetworkRepoistry(NamedParameterJdbcTemplate template) {
         this.template = template;
     }
-    public boolean findByEmailId(String email)
-    {
-    	final String sql="select userid,username from userdetails where email=:email";
-    	 SqlParameterSource param = new MapSqlParameterSource().addValue("email", email);
-    	 if(template.query(sql,param,new IdNameMapper()) != null)
-    		 return true;
-    	 else
-    		 return false;
+
+    public boolean findByEmailId(String email) {
+        final String sql = "select userid,username from userdetails where email=:email";
+        SqlParameterSource param = new MapSqlParameterSource().addValue("email", email);
+        if (template.query(sql, param, new IdNameMapper()) != null)
+            return true;
+        else
+            return false;
     }
-    public int updatepassword(String password,String email)
-    {
-    	final String sql="update userdetails set password=:password where email=:email";
-    	SqlParameterSource param = new MapSqlParameterSource().addValue("email", email).addValue("password", password);
-    	KeyHolder holder = new GeneratedKeyHolder();
-    	return (template.update(sql,param, holder));
-    	
+
+    public int updatepassword(String password, String email) {
+        final String sql = "update userdetails set password=:password where email=:email";
+        SqlParameterSource param = new MapSqlParameterSource().addValue("email", email).addValue("password", password);
+        KeyHolder holder = new GeneratedKeyHolder();
+        return (template.update(sql, param, holder));
+
     }
+
     @Override
     public List<userProfile> findById(int id) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
@@ -112,7 +115,7 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         return template.query(sql, param, new NameMapper());
     }
 
- public List<ImageModel> findImageByName(int imageId) {
+    public List<ImageModel> findImageByName(int imageId) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("picId", imageId);
         return template.query("select * from  image_model where picid=:picId", param, new ImageMapper());
     }
@@ -134,8 +137,8 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         final String sql1 = "insert into likec(postid,userid) values(:postId,:userId)";
         final String sql2 = "update post set likecount=likeCount+1 where postid=:postId";
         KeyHolder holder = new GeneratedKeyHolder();
-        SqlParameterSource param = new MapSqlParameterSource().addValue("postId", like.postId)
-                .addValue("userId", userId);
+        SqlParameterSource param = new MapSqlParameterSource().addValue("postId", like.postId).addValue("userId",
+                userId);
         template.update(sql1, param, holder);
         template.update(sql2, param, holder);
     }
@@ -145,8 +148,7 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         final String sql2 = "update post set commentcount=commentcount+1 where postid=:postId";
         KeyHolder holder = new GeneratedKeyHolder();
         SqlParameterSource param = new MapSqlParameterSource().addValue("postId", comment.postid)
-                .addValue("userId", userId)
-                .addValue("comment", comment.comment);
+                .addValue("userId", userId).addValue("comment", comment.comment);
         template.update(sql1, param, holder);
         template.update(sql2, param, holder);
     }
@@ -168,7 +170,6 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         template.update(sql, param, holder);
     }
 
-
     public void removeFriend(com.backend.code.Objects.addFriend af, int userId) {
         final String sql = "delete from friendsrelation where user1=:userId and user2=:user1 or user1=:user1 and user2=:userId";
         KeyHolder holder = new GeneratedKeyHolder();
@@ -186,6 +187,7 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         template.update(sql, param, holder);
         template.update(sql2, param, holder);
     }
+
     public void removeComment(com.backend.code.Objects.addComment comment, int userId) {
         final String sql = "delete from comment where postid=:postId and userid=:userId and commentid=:commentId";
         final String sql2 = "update post set commentcount=commentcount-1 where postid=:postId";
@@ -198,34 +200,49 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
 
     public List<IdNameStatus> showFriends(int userid) {
     	ChatController obj=new ChatController();
-    	obj.loginUsers.add(0);
-        final String sql = "select userid,username,im.picbyte,im.picid,(case \r\n" + 
-        		"						when exists(select userid from userdetails where userid in(:users)) then true \r\n" + 
-        		"						when not exists (select userid from userdetails where userid  in(:users)) then false end)\r\n" + 
+        final String sql = "select ud.userid,username,im.picbyte,im.picid,(case \r\n" + 
+        		"						when exists(select userid from userdetails where ud.userid in(:users)) then true \r\n" + 
+        		"						when not exists (select userid from userdetails where ud.userid  in(:users)) then false end)\r\n" + 
         		"						as status \r\n" + 
-        		"from userdetails\r\n" +
-        		"left join profile p on ud.userid=p.userid"+
-        		"left join image_model im on p.picid=im.picid"+
-        		"where (userid in (select user1 as user from friendsrelation where user2=:userId \r\n" + 
+        		"from userdetails ud\r\n" +
+        		"left join profile p on ud.userid=p.userid "+
+        		"left join image_model im on p.picid=im.picid "+
+        		"where (ud.userid in (select user1 as user from friendsrelation where user2=:userId and activity=1 \r\n" + 
         		"				  union\r\n" + 
-        		"				  select user2 as user from friendsrelation where user1=:userId))";
+        		"				  select user2 as user from friendsrelation where user1=:userId and activity=1))";
         SqlParameterSource param = new MapSqlParameterSource().addValue("userId", userid)
         		.addValue("users", obj.loginUsers);
         return template.query(sql, param, new IdNameStatusMapper());
     }
 
-    public List<IdName> showMembers(int userid) {
-        final String sql = "select userid,username from userdetails where userid!=:userid and userid not in (select userid1 as user from friendsrelation where userid2=:userid union select userid2 as user from friendsrelation where userid1=:userid)";
+    public List < IdNameStatus2 > showMembers(int userid) {
+        final String sql = "select ud.userid,ud.username,im.picbyte,im.picid,(case when exists(select * from friendsrelation where ((user1=ud.userid and user2=:userid) or (user1=:userid and user2=ud.userid)) and lastuser=:userid ) then 1 when exists(select * from friendsrelation where ((user1=ud.userid and user2=:userid) or (user1=:userid and user2=ud.userid)) and lastuser=ud.userid) then 2  end) as status from userdetails ud left join profile p on  ud.userid = p.userid  left join image_model im on p.picid = im.picid  where ud.userid!=:userid and ud.userid not in (select u.user1 as user  from friendsrelation u where u.user2=:userid and u.activity=1 union select u.user2 as user  from friendsrelation u where u.user1=:userid and u.activity=1)";
         SqlParameterSource param = new MapSqlParameterSource().addValue("userid", userid);
-        return template.query(sql, param, new IdNameMapper());
-    }
+        return template.query(sql, param, new IdNameStatusMapper2());
+       }
 
     public List<IdName> showLike(int userId) {
         final String sql = "select userid,username from userdetails where userid in (select userid from likec where postid=:postId)";
         SqlParameterSource param = new MapSqlParameterSource().addValue("postId", userId);
         return template.query(sql, param, new IdNameMapper());
     }
-
+    public void acceptFriend(addFriend af, int userId) {
+        int user1;
+        int user2;
+        if (af.getUser1() > userId) {
+            user1 = userId;
+            user2 = af.getUser1();
+        } else {
+            user2 = userId;
+            user1 = af.getUser1();
+        }
+        final String sql = "update friendsrelation set lastuser=:lastAction,activity=:relation where user1=:user1 and user2=:user2";
+        KeyHolder holder = new GeneratedKeyHolder();
+        SqlParameterSource param = new MapSqlParameterSource().addValue("user1", user1).addValue("user2", user2)
+                .addValue("relation", af.getRelation()).addValue("lastAction", af.getLastAction());
+        template.update(sql, param, holder);
+    }
+    
     public List<com.backend.code.Objects.displayComment> showComment(com.backend.code.Objects.addComment comment,
             int userId) {
         final String sql = "select c.commentid,c.userid,c.comment,username from comment as c join userdetails as u on c.userid=u.userid where postid=:postId";
@@ -245,30 +262,28 @@ public class FriendsNetworkRepoistry implements FriendsNetworkInterface {
         return template.query(sql, param, new userpassMapper());
     }
 
-public List<IdName> MemberSearch(String pattern,int userid) {
-	final String sql="select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) ";
-	SqlParameterSource param=new MapSqlParameterSource().addValue("pattern",pattern)
-			.addValue("userid",userid);
-	return template.query(sql, param,new IdNameMapper());
-}
+    public List<IdName> MemberSearch(String pattern, int userid) {
+        final String sql = "select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) ";
+        SqlParameterSource param = new MapSqlParameterSource().addValue("pattern", pattern).addValue("userid", userid);
+        return template.query(sql, param, new IdNameMapper());
+    }
 
-public List<IdName> FriendSearch(String pattern,int userid){
-	final String sql="select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and(not (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) )";
-	SqlParameterSource param=new MapSqlParameterSource().addValue("pattern",pattern)
-			.addValue("userid",userid);
-	return template.query(sql, param,new IdNameMapper());
-}
+    public List<IdName> FriendSearch(String pattern, int userid) {
+        final String sql = "select userid,username from userdetails where ((username like '%'||:pattern||'%') or (email like '%'||:pattern||'%') or (phonenumber like '%'||:pattern||'%')) and(not (userid!=:userid and userid not in (select user1 as user from friendsrelation where user2=:userid union select user2 as user from friendsrelation where user1=:userid)) )";
+        SqlParameterSource param = new MapSqlParameterSource().addValue("pattern", pattern).addValue("userid", userid);
+        return template.query(sql, param, new IdNameMapper());
+    }
 
-public void insertmessages(chatUsers chatusers) throws SQLException{
+    public void insertmessages(ChatMessage chatusers) throws SQLException {
+        System.out.println("ggtegeegr");
 	int user1;
     int user2;
-    int temp;
-    if (chatusers.user1 > chatusers.user2) {
-        user1 = chatusers.user2;
-        user2 = chatusers.user1;
+    if (chatusers.getSender() > chatusers.getReceiver()) {
+        user1 = chatusers.getReceiver();
+        user2 = chatusers.getSender();
     } else {
-    	user1 = chatusers.user1;
-        user2 = chatusers.user2;
+    	user1 = chatusers.getSender();
+        user2 = chatusers.getReceiver();
     }
 	final String sql1="update  messagecount set messagecount = messagecount+1 where user1=:user1 and user2 =:user2 returning messagecount\r\n" ;  
 	SqlParameterSource param=new MapSqlParameterSource().addValue("user1",user1).addValue("user2", user2);
@@ -285,9 +300,8 @@ public void insertmessages(chatUsers chatusers) throws SQLException{
     Date dateobj1 = new Date();
     String dateobj=df.format(dateobj1);
 	List<Integer> messagenum=template.query("select messagecount from messagecount where user1=:user1 and user2=:user2", param,new messagemapper());
-	System.out.println(messagenum);
 	String sql3="Insert into message (user1,user2,messagenum,message,createdtime,sender) values(:user1,:user2,:messagenum,:message,:createdtime,:senderid);";
-	SqlParameterSource param1=new MapSqlParameterSource().addValue("user1", user1).addValue("user2", user2).addValue("message", chatusers.message).addValue("messagenum",messagenum.get(0)).addValue("senderid", chatusers.senderid).addValue("createdtime",dateobj);
+	SqlParameterSource param1=new MapSqlParameterSource().addValue("user1", user1).addValue("user2", user2).addValue("message", chatusers.getContent()).addValue("messagenum",messagenum.get(0)).addValue("senderid", chatusers.getSender()).addValue("createdtime",dateobj);
 	template.update(sql3, param1,holder);
 }
 public List<messageobj> getmessages(int user1,int user2){
@@ -304,13 +318,7 @@ public List<messageobj> getmessages(int user1,int user2){
 public List<ChatPage> getChatDetails(int realuser)
 {
 	
-	final String sql="select ud.username,ud.userid,mc.messagecount,m.message,m.messagenum,m.sender,m.createdtime ,p.picid,im.name,im.picbyte,im.type\r\n" + 
-			"from userdetails ud \r\n" + 
-			"inner join message m on (ud.userid=m.user2 or ud.userid=m.user1) and ud.userid!=:realuser\r\n" + 
-			"inner join messagecount mc on (m.user1=mc.user1 and m.user2=mc.user2)\r\n" + 
-			"left join profile p on p.userid=ud.userid\r\n" + 
-			"right join image_model im on p.picid=im.picid\r\n" + 
-			"where mc.messagecount=m.messagenum and (mc.user1=m.user1 and mc.user2=m.user2);";
+	final String sql="select u.username,u.userid,mc.messagecount,m.message,m.messagenum,m.sender,m.createdtime ,p.picid,ig.name,ig.picbyte,ig.type from messagecount mc inner join message m on (mc.user1=m.user1 and mc.user2=m.user2) inner join userdetails u on (mc.user1 !=:realuser and mc.user1=u.userid or mc.user2=u.userid and mc.user2 !=:realuser) left join profile p on u.userid=p.userid left join image_model ig on p.picid=ig.picid  where (mc.user1=:realuser or mc.user2=:realuser) and mc.messagecount=m.messagenum";
 	SqlParameterSource param=new MapSqlParameterSource().addValue("realuser", realuser);
 	System.out.println(realuser);
 	return template.query(sql,param, new ChatPageMapper()); 
@@ -358,5 +366,10 @@ public longProfile getLongProfile(int userid)
 	lp.posts=posts;
 	lp.sp=res;
 	return lp;
+}
+public List<chatUsers> getIndividualChat(int userId, int friendId) {
+    final String sql="select * from message where (user1=:friendId and user2=:userId) or (user1=:userId and user2=:friendId) ";
+    SqlParameterSource param=new MapSqlParameterSource().addValue("userId", userId).addValue("friendId", friendId);
+    return template.query(sql,param, new chatUsersMapper());
 }
 }
