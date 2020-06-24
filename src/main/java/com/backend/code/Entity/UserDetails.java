@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 
 @Entity
@@ -31,6 +33,7 @@ public class UserDetails {
 	@Column(name="age",nullable=false)
 	private int age;
 	@Column(name="dateofbirth",nullable=false)
+	@JsonFormat(pattern="dd-mm-yyyy")
 	private Date dateofbirth;
 	
 	public Date getDateofbirth() {
