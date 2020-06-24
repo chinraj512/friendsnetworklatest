@@ -111,7 +111,7 @@ public class Controller {
 	@PostMapping("/Addpost/{userid}")
 	public ResponseEntity<String> addPost(@RequestBody post p,@PathVariable("userid") int userId) {
 		
-			System.out.println("rwwgw");
+			System.out.println(p.getImagemodel().getPicid());
 			repo.addPost(p,userId);
 	
 		return ResponseEntity.ok().body("post added");
